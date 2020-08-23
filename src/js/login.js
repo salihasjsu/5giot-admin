@@ -2,7 +2,7 @@ import { useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import React, { useState } from "react";
 import { Button, Col, Form, Row, Container, InputGroup } from "react-bootstrap";
-import { useHistory, Redirect } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import logo from "../images/logo.png";
 import { saveTokens } from "./manageTokens";
 import "../styles/login.css";
@@ -11,7 +11,7 @@ import line191 from "../images/login-bg/Line-191.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fa, faUser, faLock } from "@fortawesome/free-solid-svg-icons";
 
-export default function User() {
+export default function Login() {
   const [user, setUser] = useState(initUser);
   const [error, setError] = useState({ isError: false, message: "" });
   let history = useHistory();
@@ -21,12 +21,10 @@ export default function User() {
       lastName: "",
       userName: "",
       password: "",
+      lastLogin: "",
       datOfBirth: "",
       isRemember: false,
       email: "",
-      contact: "",
-      address: "",
-      role: "admin",
     };
   }
   const [login] = useMutation(gql`
@@ -40,13 +38,6 @@ export default function User() {
   function validateForm() {
     return user.userName.length > 0 && user.password.length > 0;
   }
-  function registerUser() {
-    history.push("signup");
-  }
-  function forgotPass() {
-    history.push("forgotPassword");
-  }
-
   async function submitLogin(e) {
     setError({ isError: false, message: "" });
     e.preventDefault();
@@ -77,15 +68,7 @@ export default function User() {
               <div className="form-group" style={{ marginTop: "120px" }}>
                 <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12 login-heading-btn">
                   <img className="col-sm-3 -padding" src={line190} />
-                  <span
-                    style={{
-                      color: "#00ffcb",
-                      fontSize: "18px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Login
-                  </span>
+                  <span className="form-heading col-sm-3">5G IoT System</span>
                   <img className="col-sm-3 -padding" src={line191} />
                 </div>
                 <Form className="mt-40 margin-bottom-0">
@@ -190,24 +173,17 @@ export default function User() {
                     </Col>
                   </Form.Group>
                   <Form.Group as={Row} controlId="signup">
-                    <Col
-                      sm="12"
-                      className="template"
-                      style={{ textAlign: "center" }}
-                    >
+                    <Col sm="6" className="template">
                       New User?{" "}
-                      <Button variant="link" onClick={registerUser}>
+                      <Button
+                        variant="link"
+                        style={{ paddingLeft: "0 !important" }}
+                      >
                         Register Here
                       </Button>
                     </Col>
-                    <Col
-                      sm="12"
-                      className="template"
-                      style={{ textAlign: "center" }}
-                    >
-                      <Button variant="link" onClick={forgotPass}>
-                        Forgot Password
-                      </Button>
+                    <Col sm="6" className="template">
+                      <Button variant="link">Forgot Password</Button>
                     </Col>
                   </Form.Group>
                 </Form>
