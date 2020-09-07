@@ -1,18 +1,21 @@
-import { useMutation } from "@apollo/react-hooks";
+import { useMutation, useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
-import React, { useState } from "react";
-import { Button, Col, Form, Row, Container, InputGroup } from "react-bootstrap";
-import { useHistory } from "react-router-dom";
-import logo from "../images/logo.png";
-import { saveTokens } from "./manageTokens";
-import "../styles/login.css";
-import line190 from "../images/login-bg/Line-190.png";
-import line191 from "../images/login-bg/Line-191.png";
+import React, { useState, useContext } from "react";
+import { Button, Col, Form, Row, Container } from "react-bootstrap";
+import { useHistory, Redirect } from "react-router-dom";
+import { saveTokens } from "../manageTokens";
+import "../../styles/login.css";
+import line190 from "../../images/login-bg/Line-190.png";
+import line191 from "../../images/login-bg/Line-191.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { fa, faUser, faLock } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
+import AppContext from "../appContext";
+import { getApolloClient } from "../apolloClient";
 
 export default function Login() {
+  /* ************ State Variables Initiation *********** */
   const [user, setUser] = useState(initUser);
+  const appContext = useContext(AppContext);
   const [error, setError] = useState({ isError: false, message: "" });
   let history = useHistory();
   function initUser() {
@@ -20,13 +23,17 @@ export default function Login() {
       firstName: "",
       lastName: "",
       userName: "",
-      password: "",
-      lastLogin: "",
-      datOfBirth: "",
       isRemember: false,
       email: "",
+      contactNumber: "",
+      address: "",
+      password: "",
+      role: "admin",
     };
   }
+  /* ************ END State Variables Initiation *********** */
+
+  /********** Apollo Queries plus Mutations ***************/
   const [login] = useMutation(gql`
     mutation Login($userName: String!, $password: String!) {
       login(userName: $userName, password: $password) {
@@ -35,9 +42,36 @@ export default function Login() {
       }
     }
   `);
+
+  const userByUserName = gql`
+    query UserByName($userName: String!) {
+      userByName(userName: $userName) {
+        _id
+        email
+        userName
+        firstName
+        lastName
+        contactNumber
+        address
+        role
+        password
+      }
+    }
+  `;
+
+  /*************** ENd Apollo **************************** */
+  /**************** Component Methods *********************** */
+
   function validateForm() {
     return user.userName.length > 0 && user.password.length > 0;
   }
+  function registerUser() {
+    history.push("signup");
+  }
+  function forgotPass() {
+    history.push("forgotPassword");
+  }
+
   async function submitLogin(e) {
     setError({ isError: false, message: "" });
     e.preventDefault();
@@ -46,18 +80,35 @@ export default function Login() {
     const { data, error } = await login({
       variables: loginDetails,
     });
+
     console.log(error);
+
     if (data && data.login) {
       saveTokens(data.login);
-      history.push("/dashboard");
-    } else {
-      setError({ isError: true, message: "username or passowrd is incorrect" });
-      setUser(initUser);
-    }
-  }
+      let userObj = await getUserProfile();
 
+      history.push("/dashboard");
+    }
+
+    setError({ isError: true, message: "username or passowrd is incorrect" });
+    setUser(initUser);
+  }
+  async function getUserProfile() {
+    let apolloClient = getApolloClient();
+    apolloClient
+      .query({
+        query: userByUserName,
+        variables: { userName: user.userName },
+      })
+      .then((response) => {
+        console.log(response.data);
+        return response.data.userByName;
+      })
+      .catch((err) => console.error(err));
+  }
+  /************************* End Component Methods ************************ */
   return (
-    <div className="login-cover login-bg overflow-scroll ">
+    <div className="login-cover login-bg overflow-scroll">
       <Container>
         <Row style={{ marginLeft: "-72px" }}>
           <Col className="left-panel hidden-xs hidden-sm" md="8">
@@ -68,7 +119,15 @@ export default function Login() {
               <div className="form-group" style={{ marginTop: "120px" }}>
                 <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12 login-heading-btn">
                   <img className="col-sm-3 -padding" src={line190} />
-                  <span className="form-heading col-sm-3">5G IoT System</span>
+                  <span
+                    style={{
+                      color: "#00ffcb",
+                      fontSize: "18px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Login
+                  </span>
                   <img className="col-sm-3 -padding" src={line191} />
                 </div>
                 <Form className="mt-40 margin-bottom-0">
@@ -77,11 +136,12 @@ export default function Login() {
                     controlId="formPlaintextEmail"
                     className="no-margin"
                   >
-                    <Col sm="12" className="input">
+                    <Col sm="12">
                       <input
                         id="txtUsername"
                         type="text"
                         placeholder="Username"
+                        className="text-input"
                         value={user.userName}
                         onChange={(e) => {
                           const val = e.target.value;
@@ -90,7 +150,7 @@ export default function Login() {
                           });
                         }}
                       />
-                      <span>
+                      <span className="text-input-span">
                         <i>
                           <FontAwesomeIcon
                             icon={faUser}
@@ -105,11 +165,12 @@ export default function Login() {
                     controlId="formPassword"
                     className="no-margin"
                   >
-                    <Col sm="12" className="input">
+                    <Col sm="12">
                       <input
                         id="txtPassword"
                         type="password"
                         placeholder="Password"
+                        className="text-input"
                         value={user.password}
                         onChange={(e) => {
                           const val = e.target.value;
@@ -118,7 +179,7 @@ export default function Login() {
                           });
                         }}
                       />
-                      <span>
+                      <span className="text-input-span">
                         <i>
                           <FontAwesomeIcon
                             icon={faLock}
@@ -173,17 +234,24 @@ export default function Login() {
                     </Col>
                   </Form.Group>
                   <Form.Group as={Row} controlId="signup">
-                    <Col sm="6" className="template">
+                    <Col
+                      sm="12"
+                      className="template"
+                      style={{ textAlign: "center" }}
+                    >
                       New User?{" "}
-                      <Button
-                        variant="link"
-                        style={{ paddingLeft: "0 !important" }}
-                      >
+                      <Button variant="link" onClick={registerUser}>
                         Register Here
                       </Button>
                     </Col>
-                    <Col sm="6" className="template">
-                      <Button variant="link">Forgot Password</Button>
+                    <Col
+                      sm="12"
+                      className="template"
+                      style={{ textAlign: "center" }}
+                    >
+                      <Button variant="link" onClick={forgotPass}>
+                        Forgot Password
+                      </Button>
                     </Col>
                   </Form.Group>
                 </Form>

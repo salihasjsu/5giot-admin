@@ -1,0 +1,13 @@
+.dashboard-bg {
+  background-color: #0b5574;
+  min-height: 100vh;
+  font-family: "Poppins", sans-serif;
+}
+
+.nav .active {
+  border-right: 2px solid #015ec6;
+}
+.content {
+  padding: 40px 20px 30px 40px;
+  background: #fff;
+}

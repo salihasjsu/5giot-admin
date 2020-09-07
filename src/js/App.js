@@ -1,27 +1,42 @@
 import React from "react";
-import { Col, Row } from "react-bootstrap";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "../styles/App.css";
-import Dashboard from "./dashboard";
-import PrivateRoute from "./privateRoute";
-import User from "./user";
+import Dashboard from "./dashboardComponent/dashboard";
+import PrivateRoute from "./routesComponent/privateRoute";
+import Login from "./userComponent/login";
 import NetworkError from "./networkError";
-import Signup from "./signup";
-import ForgotPassword from "./forgotPassword";
+import Signup from "./userComponent//signup";
+import ForgotPassword from "./userComponent/forgotPassword";
+import "../styles/pace.css";
+import AppContext from "./appContext";
+import { useState } from "reactn";
 
 function App() {
+  const [globalState, setGlobalState] = useState({});
+  const setUserState = (obj) => {
+    setGlobalState({ user: obj });
+  };
+  const userSettings = {
+    globalState,
+    setUserState,
+  };
   return (
-    <div className="pace-top">
-      <Router>
-        <Switch>
-          <Route exact path="/" component={User} />
-          <PrivateRoute path="/dashboard" component={Dashboard} />
-          <Route path="/error" component={NetworkError} />
-          <Route path="/signup" component={Signup} />
-          <Route path="/forgotPassword" component={ForgotPassword} />
-        </Switch>
-      </Router>
-    </div>
+    <AppContext.Provider value={userSettings}>
+      <React.Fragment>
+        <div className="pace FadeAnim"></div>
+        <div>
+          <Router>
+            <Switch>
+              <Route exact path="/" component={Login} />
+              <PrivateRoute path="/dashboard" component={Dashboard} />
+              <Route path="/error" component={NetworkError} />
+              <Route path="/signup" component={Signup} />
+              <Route path="/forgotPassword" component={ForgotPassword} />
+            </Switch>
+          </Router>
+        </div>
+      </React.Fragment>
+    </AppContext.Provider>
   );
 }
 

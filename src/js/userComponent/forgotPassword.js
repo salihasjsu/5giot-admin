@@ -3,11 +3,7 @@ import gql from "graphql-tag";
 import React, { useState } from "react";
 import { Button, Col, Form, Row, Container, InputGroup } from "react-bootstrap";
 import { useHistory, Redirect } from "react-router-dom";
-import logo from "../images/logo.png";
-import { saveTokens } from "./manageTokens";
-import "../styles/login.css";
-import line190 from "../images/login-bg/Line-190.png";
-import line191 from "../images/login-bg/Line-191.png";
+import "../../styles/login.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fa, faUser, faLock } from "@fortawesome/free-solid-svg-icons";
 

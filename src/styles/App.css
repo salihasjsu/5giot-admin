@@ -81,7 +81,7 @@
 }
 
 .no-padding {
-  padding: 0;
+  padding: 0 !important;
 }
 
 .no-margin {
@@ -91,10 +91,29 @@
 .mt-40 {
   margin-top: 40px;
 }
--margin-bottom-0 {
+.margin-bottom-0 {
   margin-bottom: 0;
 }
 
 .overflow-scroll {
   overflow: scroll;
+}
+
+/* For PACE */
+@keyframes FadeAnim {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* PACE END */
+
+.no-right-padding {
+  padding-right: 0 !important;
+}
+.no-left-padding {
+  padding-left: 0 !important;
 }

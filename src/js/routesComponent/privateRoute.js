@@ -1,21 +1,35 @@
 import { gql, useQuery } from "@apollo/react-hooks";
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
+import { saveUserToken } from "../manageTokens";
+
 //import gql from "graphql-tag";
 const PrivateRoute = ({ component: Component, ...rest }) => {
   const { loading, data } = useQuery(gql`
     query {
       loggedInUser {
-        email
+        _id
         userName
+        firstName
+        lastName
+        email
+        contactNumber
+        address
+        role
+        password
       }
     }
   `);
-  if (loading) return "Loading...";
 
+  if (loading) return "Loading...";
+  if (data.loggedInUser) {
+    let user = data.loggedInUser;
+    saveUserToken(user);
+  }
   return (
     // Show the component only when the user is logged in
     // Otherwise, redirect the user to /login page
+
     <Route
       {...rest}
       render={(props) =>

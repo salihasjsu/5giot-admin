@@ -69,33 +69,6 @@
   padding-top: 15 !important;
   font-family: Poppins !important ;
 }
-.input {
-  position: relative;
-  width: 90%;
-  /*margin: 15px auto;*/
-}
-.input span {
-  position: absolute;
-  display: block;
-  color: #00ffcb;
-  left: 25px;
-  top: 12px;
-  font-size: 16px;
-}
-.input input {
-  width: 100%;
-  padding: 12px 5px 12px 40px;
-  display: block;
-
-  /*border-radius: 4px;*/
-  transition: 0.2s ease-out;
-
-  background: #0b5574 !important;
-  border: 1px solid #b7fffe !important;
-  box-sizing: border-box !important;
-  border-radius: 5px !important;
-  color: #ffffff !important;
-}
 
 .login-bg {
   background-image: url("../images/login-bg/loginbg.png");
@@ -147,7 +120,7 @@
   /*border-radius: 4px;*/
   transition: 0.2s ease-out;
 
-  background: #0b5574 !important;
+  background-color: #0b5574 !important;
   border: 1px solid #b7fffe !important;
   box-sizing: border-box !important;
   border-radius: 5px !important;

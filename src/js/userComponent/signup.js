@@ -1,17 +1,13 @@
 import { useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { useGlobal } from "reactn";
 import { Button, Col, Form, Row, Container, InputGroup } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
-import logo from "../images/logo.png";
-import { saveTokens } from "./manageTokens";
-import "../styles/login.css";
-import line190 from "../images/login-bg/Line-190.png";
-import line191 from "../images/login-bg/Line-191.png";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { fa, faUser, faLock } from "@fortawesome/free-solid-svg-icons";
+import "../../styles/login.css";
+import line190 from "../../images/login-bg/Line-190.png";
+import line191 from "../../images/login-bg/Line-191.png";
 import MaskedInput from "react-text-mask";
-import emailMask from "react-text-mask";
 export default function Signup() {
   const [user, setUser] = useState(initUser);
   const [error, setError] = useState({ isError: false, message: "" });
@@ -22,19 +18,37 @@ export default function Signup() {
       lastName: "",
       userName: "",
       password: "",
-      datOfBirth: "",
-      isRemember: false,
       email: "",
-      contact: "",
+      contactNumber: "",
       address: "",
       role: "admin",
     };
   }
+
   const [signup] = useMutation(gql`
-    mutation addUser($userName: String!, $password: String!) {
-      login(userName: $userName, password: $password) {
-        refreshToken
-        accessToken
+    mutation addUser(
+      $userName: String!
+      $password: String!
+      $email: String!
+      $firstName: String!
+      $lastName: String!
+      $contactNumber: String!
+      $address: String!
+      $role: String!
+    ) {
+      addUser(
+        userName: $userName
+        password: $password
+        firstName: $firstName
+        lastName: $lastName
+        email: $email
+        contactNumber: $contactNumber
+        address: $address
+        role: $role
+      ) {
+        code
+        isError
+        message
       }
     }
   `);
@@ -43,7 +57,7 @@ export default function Signup() {
       user.userName.length > 0 &&
       user.password.length > 0 &&
       user.email.length > 0 &&
-      user.contact.length > 0 &&
+      user.contactNumber.length > 0 &&
       user.address.length > 0 &&
       user.firstName.length > 0 &&
       user.lastName.length > 0
@@ -52,24 +66,23 @@ export default function Signup() {
   async function submitUser(e) {
     setError({ isError: false, message: "" });
     e.preventDefault();
-    console.log(user);
+    console.log("Going to post user from FRONTEND:", user);
     if (!validateForm()) {
       setError({ isError: true, message: "All fields are required" });
       return;
     }
 
-    /* const loginDetails = { userName: user.userName, password: user.password };
-    const { data, error } = await login({
-      variables: loginDetails,
+    const { data, error } = await signup({
+      variables: user,
     });
     console.log(error);
-    if (data && data.login) {
-      saveTokens(data.login);
-      history.push("/dashboard");
+    console.log(data);
+    if (data) {
+      history.push("/");
     } else {
-      setError({ isError: true, message: "username or passowrd is incorrect" });
+      setError({ isError: true, message: "username already exist" });
       setUser(initUser);
-    }*/
+    }
   }
   function gotoLogin() {
     history.push("/");
@@ -100,14 +113,15 @@ export default function Signup() {
                 <Form className="mt-40 margin-bottom-0">
                   <Form.Group
                     as={Row}
-                    controlId="formPlaintextEmail"
+                    controlId="formPlaintextUser"
                     className="no-margin"
                   >
-                    <Col sm="12" className="input">
+                    <Col sm="12">
                       <input
                         id="txtUsername"
                         type="text"
                         placeholder="Username"
+                        className="text-input"
                         value={user.userName}
                         onChange={(e) => {
                           const val = e.target.value;
@@ -123,12 +137,12 @@ export default function Signup() {
                     controlId="formPlaintextEmail"
                     className="no-margin"
                   >
-                    <Col sm="12" className="input">
-                      <MaskedInput
-                        mask={[/[a-zA-Z]/, /[a-zA-Z]/, /[a-zA-Z]/]}
+                    <Col sm="12">
+                      <input
                         id="txtEMail"
-                        type="text"
+                        type="email"
                         placeholder="Email"
+                        className="text-input"
                         value={user.email}
                         onChange={(e) => {
                           const val = e.target.value;
@@ -144,10 +158,11 @@ export default function Signup() {
                     controlId="formPassword"
                     className="no-margin"
                   >
-                    <Col sm="12" className="input">
+                    <Col sm="12">
                       <input
                         id="txtPassword"
                         type="password"
+                        className="text-input"
                         placeholder="Password"
                         value={user.password}
                         onChange={(e) => {
@@ -161,19 +176,24 @@ export default function Signup() {
                   </Form.Group>
                   <Form.Group
                     as={Row}
-                    controlId="formPlaintextEmail"
+                    controlId="formPlaintextName"
                     className="no-margin"
                   >
-                    <Col sm="12" className="input">
+                    <Col sm="12">
                       <input
                         id="txtFirstname"
                         type="text"
+                        className="text-input"
                         placeholder="First Name"
                         value={user.firstName}
                         onChange={(e) => {
                           const val = e.target.value;
                           setUser((prevState) => {
-                            return { ...prevState, firstName: val };
+                            return {
+                              ...prevState,
+                              firstName:
+                                val.charAt(0).toUpperCase() + val.slice(1),
+                            };
                           });
                         }}
                       />
@@ -181,19 +201,24 @@ export default function Signup() {
                   </Form.Group>
                   <Form.Group
                     as={Row}
-                    controlId="formPlaintextEmail"
+                    controlId="formPlaintextLName"
                     className="no-margin"
                   >
-                    <Col sm="12" className="input">
+                    <Col sm="12">
                       <input
                         id="txtLastname"
                         type="text"
+                        className="text-input"
                         placeholder="Last Name"
                         value={user.lastName}
                         onChange={(e) => {
                           const val = e.target.value;
                           setUser((prevState) => {
-                            return { ...prevState, lastName: val };
+                            return {
+                              ...prevState,
+                              lastName:
+                                val.charAt(0).toUpperCase() + val.slice(1),
+                            };
                           });
                         }}
                       />
@@ -204,7 +229,7 @@ export default function Signup() {
                     controlId="formPlaintextContact"
                     className="no-margin"
                   >
-                    <Col sm="12" className="input">
+                    <Col sm="12">
                       <MaskedInput
                         mask={[
                           "(",
@@ -224,12 +249,13 @@ export default function Signup() {
                         ]}
                         id="txtcontact"
                         type="text"
+                        className="text-input"
                         placeholder="Contact"
-                        value={user.contact}
+                        value={user.contactNumber}
                         onChange={(e) => {
                           const val = e.target.value;
                           setUser((prevState) => {
-                            return { ...prevState, contact: val };
+                            return { ...prevState, contactNumber: val };
                           });
                         }}
                       />
@@ -240,10 +266,11 @@ export default function Signup() {
                     controlId="formPlaintextAddress"
                     className="no-margin"
                   >
-                    <Col sm="12" className="input">
+                    <Col sm="12">
                       <input
                         id="txtFirstname"
                         type="text"
+                        className="text-input"
                         placeholder="Address"
                         value={user.address}
                         onChange={(e) => {
