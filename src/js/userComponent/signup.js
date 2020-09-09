@@ -1,13 +1,12 @@
 import { useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
-import React, { useState, useContext } from "react";
-import { useGlobal } from "reactn";
-import { Button, Col, Form, Row, Container, InputGroup } from "react-bootstrap";
+import React, { useState } from "react";
+import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
-import "../../styles/login.css";
+import MaskedInput from "react-text-mask";
 import line190 from "../../images/login-bg/Line-190.png";
 import line191 from "../../images/login-bg/Line-191.png";
-import MaskedInput from "react-text-mask";
+import "../../styles/login.css";
 export default function Signup() {
   const [user, setUser] = useState(initUser);
   const [error, setError] = useState({ isError: false, message: "" });

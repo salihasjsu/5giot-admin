@@ -1,25 +1,13 @@
-import React, { useContext, useState } from "react";
 import { useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
-import {
-  Navbar,
-  NavDropdown,
-  Button,
-  Modal,
-  Form,
-  Col,
-  Row,
-} from "react-bootstrap";
+import React, { useContext, useState } from "react";
+import { Button, Form, Modal, Navbar, NavDropdown, Row } from "react-bootstrap";
+import { useHistory } from "react-router-dom";
 import MaskedInput from "react-text-mask";
-import "../../styles/header.css";
 import userIcon from "../../images/user.png";
+import "../../styles/header.css";
 import AppContext from "../appContext";
-import {
-  getUserToken,
-  removeUserToken,
-  saveUserToken,
-  saveTokens,
-} from "../manageTokens";
+import { getUserToken, removeTokens, removeUserToken } from "../manageTokens";
 
 export default function Header() {
   /*************** DATA ********************* */
@@ -29,7 +17,7 @@ export default function Header() {
   const [user, setUser] = useState(
     appContext.globalState.user ? appContext.globalState.user : getUserToken()
   );
-
+  let history = useHistory();
   const [userProfile, setUserProfile] = useState(user);
 
   /******************** Methods ***************** */
@@ -66,6 +54,12 @@ export default function Header() {
     setError({ isError: true, message: "Error from Server side." });
   }
 
+  function logout() {
+    removeUserToken();
+    removeTokens();
+    history.push("/");
+  }
+
   /******************* APollo Queries **************** */
   const [updateUser] = useMutation(gql`
     mutation updateUser(
@@ -99,7 +93,7 @@ export default function Header() {
   /*************END****************** */
   return (
     <div className="header">
-      <Navbar bg="primary" variant="dark">
+      <Navbar variant="dark" className="color-nav">
         <Navbar.Brand>
           Welcome{" "}
           {user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1)},{" "}
@@ -120,7 +114,7 @@ export default function Header() {
           >
             <NavDropdown.Item onClick={handleShow}>Profile</NavDropdown.Item>
             <NavDropdown.Divider />
-            <NavDropdown.Item href="#action/3.3">Logout</NavDropdown.Item>
+            <NavDropdown.Item onClick={logout}>Logout</NavDropdown.Item>
           </NavDropdown>
         </Navbar.Collapse>
       </Navbar>
@@ -204,8 +198,24 @@ export default function Header() {
             </Form.Group>
             <Form.Group controlId="formBasicContact">
               <Form.Label>Contact Number</Form.Label>
-              <Form.Control
-                type="text"
+              <MaskedInput
+                mask={[
+                  "(",
+                  /[1-9]/,
+                  /\d/,
+                  /\d/,
+                  ")",
+                  " ",
+                  /\d/,
+                  /\d/,
+                  /\d/,
+                  "-",
+                  /\d/,
+                  /\d/,
+                  /\d/,
+                  /\d/,
+                ]}
+                class="form-control"
                 placeholder="Contact Number"
                 value={userProfile.contactNumber}
                 onChange={(e) => {

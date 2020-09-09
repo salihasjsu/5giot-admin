@@ -1,8 +1,8 @@
 import React from "react";
-import { Card, Row, Col, Table, Container } from "react-bootstrap";
-export default function page() {
+import { Card, Col, Table } from "react-bootstrap";
+export default function Page() {
   return (
-    <Container>
+    <div>
       <div className="row" style={{ paddingTop: "10px" }}>
         <Col sm="6">
           <Card style={{ height: "40vh" }}>
@@ -57,6 +57,6 @@ export default function page() {
           </Card>
         </Col>
       </div>
-    </Container>
+    </div>
   );
 }

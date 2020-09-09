@@ -1,5 +1,5 @@
 import React from "react";
-import { Col, Row, Form, FormGroup, Container } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 export default function NetworkError() {
   return (
     <div className="login-cover login-bg">

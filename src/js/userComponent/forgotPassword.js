@@ -1,11 +1,11 @@
 import { useMutation } from "@apollo/react-hooks";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import gql from "graphql-tag";
 import React, { useState } from "react";
-import { Button, Col, Form, Row, Container, InputGroup } from "react-bootstrap";
-import { useHistory, Redirect } from "react-router-dom";
+import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { useHistory } from "react-router-dom";
 import "../../styles/login.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { fa, faUser, faLock } from "@fortawesome/free-solid-svg-icons";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");

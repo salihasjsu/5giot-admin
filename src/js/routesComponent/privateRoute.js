@@ -22,8 +22,8 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
   `);
 
   if (loading) return "Loading...";
-  if (data.loggedInUser) {
-    let user = data.loggedInUser;
+  if (data) {
+    let user = data.loggedInUser ? data.loggedInUser : null;
     saveUserToken(user);
   }
   return (

@@ -1,5 +1,6 @@
 .dashboard-bg {
   background-color: #0b5574;
+  background-image: url("../images/btstrp-bg1.jpg");
   min-height: 100vh;
   font-family: "Poppins", sans-serif;
 }

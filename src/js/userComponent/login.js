@@ -1,16 +1,16 @@
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/react-hooks";
+import { faLock, faUser } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import gql from "graphql-tag";
-import React, { useState, useContext } from "react";
-import { Button, Col, Form, Row, Container } from "react-bootstrap";
-import { useHistory, Redirect } from "react-router-dom";
-import { saveTokens } from "../manageTokens";
-import "../../styles/login.css";
+import React, { useContext, useState } from "react";
+import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { useHistory } from "react-router-dom";
 import line190 from "../../images/login-bg/Line-190.png";
 import line191 from "../../images/login-bg/Line-191.png";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
-import AppContext from "../appContext";
+import "../../styles/login.css";
 import { getApolloClient } from "../apolloClient";
+import AppContext from "../appContext";
+import { saveTokens } from "../manageTokens";
 
 export default function Login() {
   /* ************ State Variables Initiation *********** */
@@ -86,7 +86,7 @@ export default function Login() {
     if (data && data.login) {
       saveTokens(data.login);
       let userObj = await getUserProfile();
-
+      appContext.setUserState(userObj);
       history.push("/dashboard");
     }
 

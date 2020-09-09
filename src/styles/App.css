@@ -75,6 +75,9 @@
 .hidden {
   display: none;
 }
+.not-hidden {
+  display: block;
+}
 .error-message {
   display: block;
   color: red;

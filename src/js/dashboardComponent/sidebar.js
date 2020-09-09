@@ -1,5 +1,5 @@
-import "../../styles/sidebar.css";
 import React from "react";
+import "../../styles/sidebar.css";
 export default function Sidebar({ width, height, children }) {
   const [xPosition, setX] = React.useState(-width);
 
