@@ -1,48 +1,74 @@
-import React, { useState } from "react";
-import { Card, Col, Table } from "react-bootstrap";
-
+import React, { useState, useEffect } from "react";
+import { Card, Col } from "react-bootstrap";
+import CustomizedTable from "../sharedComponents/customizedTable";
+import { assetColumns, userColumns } from "../sharedComponents/tableColumns";
+import { getAssets } from "../assetComponent/assetService";
+import { getApolloClient } from "../apolloClient";
+import { getUsers } from "../userComponent/userService";
 export default function Page() {
-  const [usersInformation, setUsersInformation] = useState([
-    { id: "1", name: "ssss", emai: "asdsad", role: "asdsad" },
-  ]);
+  const columns = React.useMemo(() => assetColumns, []);
+  const userTable = React.useMemo(() => userColumns, []);
+  const [assets, setAssets] = useState([]);
+  const [users, setUsers] = useState([]);
+
+  useEffect(
+    () => {
+      let apolloClient = getApolloClient();
+      if (!assets.length > 0) {
+        apolloClient
+          .query({
+            query: getAssets,
+          })
+          .then((response) => {
+            setAssets(response.data.assets);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      }
+      if (!users.length > 0) {
+        apolloClient
+          .query({
+            query: getUsers,
+          })
+          .then((response) => {
+            let usersList = [];
+            usersList = response.data.users.map((obj) => {
+              return {
+                name: obj.firstName + " " + obj.lastName,
+                role: obj.role,
+                contactNumber: obj.contactNumber,
+              };
+            });
+
+            console.log(users);
+            setUsers(usersList);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      }
+    },
+    [users],
+    [assets]
+  );
   return (
     <div>
       <div className="row" style={{ paddingTop: "10px" }}>
         <Col sm="6">
           <Card style={{ height: "40vh" }}>
-            <Card.Header>Statistics</Card.Header>
-            <Card.Body>
-              <Table responsive hover>
-                <thead>
-                  <tr>
-                    <th scope="col">id</th>
-                    <th scope="col">Nom</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Role</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {usersInformation.map((userInformation) => {
-                    const userLink = `/home/users/${userInformation.id}`;
-                    return (
-                      <tr key="userInformation.id">
-                        <td>{userInformation.id}</td>
-                        <td>{userInformation.email}</td>
-                        <td>{userInformation.role}</td>
-                        <td>{userInformation.derniereCnx}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
-            </Card.Body>
+            <Card.Header className="bg-warning text-white">
+              Statistics
+            </Card.Header>
+            <Card.Body></Card.Body>
           </Card>
         </Col>
         <Col sm="6">
-          <Card style={{ height: "40vh" }}>
-            <Card.Header>Users</Card.Header>
-            <Card.Body></Card.Body>
+          <Card style={{ height: "40vh", overflow: "scroll" }}>
+            <Card.Header className="bg-primary text-white">Users</Card.Header>
+            <Card.Body>
+              <CustomizedTable columns={userTable} data={users} />
+            </Card.Body>
           </Card>
         </Col>
       </div>
@@ -50,17 +76,17 @@ export default function Page() {
       <div className="row" style={{ paddingTop: "10px" }}>
         <Col sm="6">
           <Card style={{ height: "40vh" }}>
-            <Card.Header>Location</Card.Header>
-            <Card.Body>
+            <Card.Header className="bg-info text-white">Location</Card.Header>
+            <Card.Body style={{ backgroundColor: "white" }}>
               <Card.Text></Card.Text>
             </Card.Body>
           </Card>
         </Col>
         <Col sm="6">
-          <Card style={{ height: "40vh" }}>
-            <Card.Header>Assets</Card.Header>
-            <Card.Body>
-              <Card.Text></Card.Text>
+          <Card style={{ height: "40vh", overflow: "scroll" }}>
+            <Card.Header className="bg-success text-white">Assets</Card.Header>
+            <Card.Body style={{ backgroundColor: "white" }}>
+              <CustomizedTable columns={columns} data={assets} />
             </Card.Body>
           </Card>
         </Col>

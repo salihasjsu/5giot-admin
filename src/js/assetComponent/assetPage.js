@@ -5,7 +5,13 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, Form, Modal, Row } from "react-bootstrap";
 import "../../styles/asset.css";
 import { getApolloClient } from "../apolloClient";
-import CustomizedTable from "./customizedTable";
+import CustomizedTable from "../sharedComponents/customizedTable";
+import {
+  getAssets,
+  addAsset,
+  updateAsset,
+  removeAsset,
+} from "./assetService.js";
 export default function AssetPage() {
   const [assets, setAssets] = useState([]);
 
@@ -111,9 +117,9 @@ export default function AssetPage() {
     [assets],
     [assetObj]
   );
-  useEffect(() => {
+  /* useEffect(() => {
     console.log("selected rows: ", selectedRows);
-  }, [selectedRows]);
+  }, [selectedRows]);*/
   /****************Methods ********************** */
   const onSelectedRows = (rows) => {
     //console.log("Row Selection");
@@ -179,70 +185,6 @@ export default function AssetPage() {
     );
   }
   /***************** Apollo Queries ******************/
-
-  const addAsset = gql`
-    mutation addAsset(
-      $name: String!
-      $manufacturer: String!
-      $imei: String!
-      $status: String!
-    ) {
-      addAsset(
-        name: $name
-        manufacturer: $manufacturer
-        imei: $imei
-        status: $status
-      ) {
-        code
-        isError
-        message
-      }
-    }
-  `;
-
-  const updateAsset = gql`
-    mutation updateAsset(
-      $_id: String
-      $name: String!
-      $manufacturer: String!
-      $imei: String!
-      $status: String!
-    ) {
-      updateAsset(
-        _id: $_id
-        name: $name
-        manufacturer: $manufacturer
-        imei: $imei
-        status: $status
-      ) {
-        code
-        isError
-        message
-      }
-    }
-  `;
-
-  const getAssets = gql`
-    query Assets {
-      assets {
-        _id
-        name
-        manufacturer
-        imei
-        status
-      }
-    }
-  `;
-
-  const removeAsset = gql`
-    mutation DeleteAsset($_id: String!) {
-      deleteAsset(_id: $_id) {
-        code
-        isError
-        message
-      }
-    }
-  `;
 
   async function postAsset(action) {
     let apolloClient = getApolloClient();

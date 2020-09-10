@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useTable, useSortBy, usePagination, useRowSelect } from "react-table";
+import { Col } from "react-bootstrap";
 import styled from "styled-components";
 const Styles = styled.div`
   padding: 1rem;
@@ -62,7 +63,7 @@ export default function CustomizedTable({ columns, data }) {
     {
       columns,
       data,
-      initialState: { pageIndex: 0 },
+      initialState: { pageIndex: 0, pageSize: 5 },
     },
     useSortBy,
     usePagination
@@ -111,8 +112,8 @@ export default function CustomizedTable({ columns, data }) {
             })}
           </tbody>
         </table>
-        <div className="pagination" style={{ marginTop: "250px" }}>
-          <div className="col-sm-4">
+        <div className="pagination" style={{ marginTop: "50px" }}>
+          <div>
             {" "}
             <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
               {"<<"}
@@ -130,16 +131,16 @@ export default function CustomizedTable({ columns, data }) {
               {">>"}
             </button>
           </div>{" "}
-          <div className="col-sm-2">
+          {/*   <div>
             <span>
               Page{" "}
               <strong>
                 {pageIndex + 1} of {pageOptions.length}
               </strong>{" "}
             </span>
-          </div>
-          <div className="col-sm-6 ">
-            {/* <span style={{ float: "right", marginLeft: "10px" }}>
+          </div>*/}
+          <Col>
+            {/*<span style={{ float: "right", marginLeft: "10px" }}>
               Go to page:{" "}
               <input
                 type="number"
@@ -150,7 +151,8 @@ export default function CustomizedTable({ columns, data }) {
                 }}
                 style={{ width: "100px" }}
               />
-              </span>{" "}*/}
+            </span>{" "}
+              */}
             <select
               style={{ float: "right" }}
               value={pageSize}
@@ -164,7 +166,7 @@ export default function CustomizedTable({ columns, data }) {
                 </option>
               ))}
             </select>
-          </div>
+          </Col>
         </div>
       </Styles>
     </>
