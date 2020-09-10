@@ -39,7 +39,7 @@ const Styles = styled.div`
     padding: 1rem;
   }
 `;
-export default function CustomizedTable({ onSelectedRows, columns, data }) {
+export default function CustomizedTable({ columns, data }) {
   const {
     getTableProps,
     getTableBodyProps,
@@ -57,7 +57,7 @@ export default function CustomizedTable({ onSelectedRows, columns, data }) {
     setPageSize,
     selectedFlatRows,
 
-    state: { pageIndex, pageSize, selectedRowIds },
+    state: { pageIndex, pageSize },
   } = useTable(
     {
       columns,
@@ -65,53 +65,23 @@ export default function CustomizedTable({ onSelectedRows, columns, data }) {
       initialState: { pageIndex: 0 },
     },
     useSortBy,
-
-    usePagination,
-    useRowSelect,
-    (hooks) => {
-      hooks.visibleColumns.push((columns) => [
-        // Let's make a column for selection
-        {
-          id: "selection",
-          // The header can use the table's getToggleAllRowsSelectedProps method
-          // to render a checkbox
-          Header: ({ getToggleAllPageRowsSelectedProps }) => (
-            <div>
-              <input
-                type="checkbox"
-                {...getToggleAllPageRowsSelectedProps()}
-                indeterminate="false"
-              />
-            </div>
-          ),
-          // The cell can use the individual row's getToggleRowSelectedProps method
-          // to the render a checkbox
-          Cell: ({ row }) => (
-            <div>
-              <input
-                type="checkbox"
-                {...row.getToggleRowSelectedProps()}
-                indeterminate="false"
-              />
-            </div>
-          ),
-        },
-        ...columns,
-      ]);
-    }
+    usePagination
   );
-  useEffect(() => {
+  /* useEffect(() => {
     onSelectedRows(selectedFlatRows);
-  }, [selectedFlatRows]);
+  }, [selectedFlatRows]);*/
   return (
     <>
       <Styles>
         <table {...getTableProps()}>
-          <thead style={{ color: "black" }}>
+          <thead>
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                  <th
+                    style={column.style}
+                    {...column.getHeaderProps(column.getSortByToggleProps())}
+                  >
                     {column.render("Header")}
                     {/* Add a sort direction indicator */}
                     <span>
@@ -126,7 +96,7 @@ export default function CustomizedTable({ onSelectedRows, columns, data }) {
               </tr>
             ))}
           </thead>
-          <tbody {...getTableBodyProps()}>
+          <tbody {...getTableBodyProps()} style={{ overflow: "scroll" }}>
             {page.map((row, i) => {
               prepareRow(row);
               return (
@@ -141,7 +111,7 @@ export default function CustomizedTable({ onSelectedRows, columns, data }) {
             })}
           </tbody>
         </table>
-        <div className="pagination">
+        <div className="pagination" style={{ marginTop: "250px" }}>
           <div className="col-sm-4">
             {" "}
             <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
@@ -169,7 +139,7 @@ export default function CustomizedTable({ onSelectedRows, columns, data }) {
             </span>
           </div>
           <div className="col-sm-6 ">
-            <span style={{ float: "right", marginLeft: "10px" }}>
+            {/* <span style={{ float: "right", marginLeft: "10px" }}>
               Go to page:{" "}
               <input
                 type="number"
@@ -180,7 +150,7 @@ export default function CustomizedTable({ onSelectedRows, columns, data }) {
                 }}
                 style={{ width: "100px" }}
               />
-            </span>{" "}
+              </span>{" "}*/}
             <select
               style={{ float: "right" }}
               value={pageSize}
@@ -188,7 +158,7 @@ export default function CustomizedTable({ onSelectedRows, columns, data }) {
                 setPageSize(Number(e.target.value));
               }}
             >
-              {[10, 20, 30, 40, 50].map((pageSize) => (
+              {[5, 10, 20, 30, 50].map((pageSize) => (
                 <option key={pageSize} value={pageSize}>
                   Show {pageSize}
                 </option>

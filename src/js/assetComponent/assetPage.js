@@ -1,27 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { Container, Button, Card, Row, Modal, Form } from "react-bootstrap";
-import "../../styles/asset.css";
-import CustomizedTable from "./customizedTable";
-import { faPlus, faTrash, faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ReactDOM } from "react-dom";
+import gql from "graphql-tag";
+import React, { useEffect, useState } from "react";
+import { Button, Card, Form, Modal, Row } from "react-bootstrap";
+import "../../styles/asset.css";
+import { getApolloClient } from "../apolloClient";
+import CustomizedTable from "./customizedTable";
 export default function AssetPage() {
-  const [assets, setAssets] = useState([
-    {
-      name: "ag15",
-      imei: "1112332",
-      manufacturer: "quectel",
-      status: "active",
-    },
-    {
-      name: "bg77",
-      imei: "12312321",
-      manufacturer: "quectel",
-      status: "active",
-    },
-  ]);
+  const [assets, setAssets] = useState([]);
 
+  const [editIndex, setEditIndex] = useState("");
+  const [isAdd, setIsAdd] = useState(true);
   const [assetObj, setAssetObj] = useState(initAsset());
+  useEffect(() => {
+    if (!assets.length > 0) initializeAssetsApi();
+  }, []);
   const columns = React.useMemo(
     () => [
       { Header: "Name", accessor: "name" },
@@ -38,25 +31,59 @@ export default function AssetPage() {
         accessor: "status",
       },
       {
-        Header: "Delete",
+        Header: "Edit/Delete",
         id: "delete",
         accessor: (str) => "delete",
+        style: { width: "15%" },
 
         Cell: (tableProps) => (
-          <Button
-            variant="primary"
-            onClick={(e) => {
-              let dataCopy = {};
-              dataCopy = [...assets];
+          <div>
+            <Button
+              variant="warning"
+              style={{ padding: "5" }}
+              onClick={(e) => {
+                let dataCopy = assets[tableProps.row.index];
+                setAssetObj(dataCopy);
+                setEditIndex(tableProps.row.index);
+                setIsAdd(false);
+                showAddModal();
+              }}
+            >
+              {" "}
+              <span style={{ padding: "5px" }}>
+                <i>
+                  <FontAwesomeIcon icon={faEdit} />
+                </i>
+              </span>
+            </Button>
+            <Button
+              variant="danger"
+              style={{ margin: "5px" }}
+              onClick={(e) => {
+                let dataCopy = {};
+                dataCopy = [...assets];
 
-              console.log("Assets in delete", assets);
-              dataCopy.splice(tableProps.row.index, 1);
-
-              setAssets(dataCopy);
-            }}
-          >
-            Delete
-          </Button>
+                console.log("Assets in delete", assets);
+                deleteAsset(dataCopy[tableProps.row.index])
+                  .then((response) => {
+                    if (response.data.deleteAsset.code == "200") {
+                      dataCopy.splice(tableProps.row.index, 1);
+                      setAssets(dataCopy);
+                    }
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                  });
+              }}
+            >
+              {" "}
+              <span style={{ margin: "5px" }}>
+                <i>
+                  <FontAwesomeIcon icon={faTrash} />
+                </i>
+              </span>
+            </Button>
+          </div>
         ),
       },
     ],
@@ -66,6 +93,7 @@ export default function AssetPage() {
 
   function initAsset() {
     return {
+      _id: "",
       name: "",
       imei: "",
       status: "Active",
@@ -94,25 +122,55 @@ export default function AssetPage() {
     //console.log("Selected Rows: ", selectedRows);
   };
   const showAddModal = () => {
-    setAssetObj(initAsset());
     console.log("Show model -assets", assets);
     setShowAdd(true);
   };
   function handleAddClose() {
+    setAssetObj(initAsset());
     setShowAdd(false);
+    setIsAdd(true);
   }
+  const initializeAssetsApi = () => {
+    queryAssets()
+      .then((response) => {
+        setAssets(response.data.assets);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+    return "";
+  };
 
-  function addAsset() {
+  const addAssetTable = () => {
     setError({ isError: false, message: "" });
     if (!validateAsset()) {
       setError({ isError: true, message: "All fields are required." });
       return;
     }
-
-    setAssets((prevState) => [...prevState, assetObj]);
-
-    setShowAdd(false);
-  }
+    postAsset("add")
+      .then((response) => {
+        console.log(response.data);
+        assetObj._id = response.data.addAsset.message;
+        setAssets((prevState) => [...prevState, assetObj]);
+        setShowAdd(false);
+        setAssetObj(initAsset());
+      })
+      .catch((err) => console.error(err));
+  };
+  const editAssetTable = () => {
+    postAsset("edit")
+      .then(() => {
+        let copyData = [...assets];
+        copyData[editIndex] = assetObj;
+        console.log(editIndex);
+        setAssets(copyData);
+        setEditIndex(-1);
+        setShowAdd(false);
+        setIsAdd(true);
+        setAssetObj(initAsset());
+      })
+      .catch((err) => console.error(err));
+  };
   function validateAsset() {
     return (
       assetObj.manufacturer.length > 0 &&
@@ -120,64 +178,140 @@ export default function AssetPage() {
       assetObj.imei.length > 0
     );
   }
-  function deleteAsset() {
-    const splicedAsset = [...assets];
-    for (var i = 0; i < selectedRows.length; i++) {
-      var index = splicedAsset.indexOf(selectedRows[i]);
-      splicedAsset.splice(index, 1);
+  /***************** Apollo Queries ******************/
+
+  const addAsset = gql`
+    mutation addAsset(
+      $name: String!
+      $manufacturer: String!
+      $imei: String!
+      $status: String!
+    ) {
+      addAsset(
+        name: $name
+        manufacturer: $manufacturer
+        imei: $imei
+        status: $status
+      ) {
+        code
+        isError
+        message
+      }
     }
-    setAssets(splicedAsset);
-    setSelectedRows({});
+  `;
+
+  const updateAsset = gql`
+    mutation updateAsset(
+      $_id: String
+      $name: String!
+      $manufacturer: String!
+      $imei: String!
+      $status: String!
+    ) {
+      updateAsset(
+        _id: $_id
+        name: $name
+        manufacturer: $manufacturer
+        imei: $imei
+        status: $status
+      ) {
+        code
+        isError
+        message
+      }
+    }
+  `;
+
+  const getAssets = gql`
+    query Assets {
+      assets {
+        _id
+        name
+        manufacturer
+        imei
+        status
+      }
+    }
+  `;
+
+  const removeAsset = gql`
+    mutation DeleteAsset($_id: String!) {
+      deleteAsset(_id: $_id) {
+        code
+        isError
+        message
+      }
+    }
+  `;
+
+  async function postAsset(action) {
+    let apolloClient = getApolloClient();
+    if (action === "add") {
+      return apolloClient.mutate({
+        mutation: addAsset,
+        variables: {
+          name: assetObj.name,
+          manufacturer: assetObj.manufacturer,
+          imei: assetObj.imei,
+          status: assetObj.status,
+        },
+      });
+    } else if (action == "edit") {
+      return apolloClient.mutate({
+        mutation: updateAsset,
+        variables: {
+          _id: assetObj._id,
+          name: assetObj.name,
+          manufacturer: assetObj.manufacturer,
+          imei: assetObj.imei,
+          status: assetObj.status,
+        },
+      });
+    }
   }
+  async function queryAssets() {
+    let apolloClient = getApolloClient();
+    return apolloClient.query({
+      query: getAssets,
+    });
+  }
+  async function deleteAsset(obj) {
+    let apolloClient = getApolloClient();
+    return apolloClient.mutate({
+      mutation: removeAsset,
+      variables: {
+        _id: obj._id,
+      },
+    });
+  }
+  /***********************END************************* */
   return (
     <div>
-      <Container className="asset-page">
-        <Card>
-          <Card.Header>
-            <Card.Title>Assets</Card.Title>
-          </Card.Header>
-          <Card.Body>
-            <Row>
-              <Button
-                variant="primary"
-                className="button-asset"
-                onClick={showAddModal}
-              >
+      <Card style={{ overflow: "scroll", height: "500px" }}>
+        <Card.Header>
+          <Card.Title>Assets</Card.Title>
+        </Card.Header>
+        <Card.Body>
+          <Row>
+            <Button
+              variant="primary"
+              className="button-asset"
+              onClick={showAddModal}
+            >
+              <span style={{ padding: "5px" }}>
                 <i>
                   <FontAwesomeIcon icon={faPlus} />
                 </i>
-                ADD
-              </Button>{" "}
-              <Button
-                variant="danger"
-                className="button-asset"
-                disabled={selectedRows.length > 0 ? false : true}
-                onClick={deleteAsset}
-              >
-                <i>
-                  <FontAwesomeIcon icon={faTrash} /> Delete
-                </i>
-              </Button>
-              <Button
-                variant="warning"
-                className="button-asset"
-                disabled={selectedRows.length > 0 ? false : true}
-              >
-                <i>
-                  <FontAwesomeIcon icon={faEdit} /> Edit
-                </i>
-              </Button>
-            </Row>
-            <div id="customTable">
-              <CustomizedTable
-                onSelectedRows={onSelectedRows}
-                columns={columns}
-                data={assets}
-              />
-            </div>
-          </Card.Body>
-        </Card>
-      </Container>
+              </span>
+              ADD
+            </Button>{" "}
+          </Row>
+          <div id="customTable">
+            <CustomizedTable columns={columns} data={assets} />
+          </div>
+        </Card.Body>
+      </Card>
+
       <Modal
         show={showAdd}
         onHide={() => setShowAdd(false)}
@@ -237,6 +371,7 @@ export default function AssetPage() {
               <Form.Label>Status</Form.Label>
               <Form.Control
                 as="select"
+                value={assetObj.status}
                 onChange={(e) => {
                   const val = e.target.value;
                   setAssetObj((prevState) => {
@@ -262,8 +397,19 @@ export default function AssetPage() {
           <Button variant="secondary" onClick={handleAddClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={addAsset}>
+          <Button
+            variant="primary"
+            onClick={addAssetTable}
+            className={isAdd ? "not-hidden" : "hidden"}
+          >
             Add
+          </Button>
+          <Button
+            variant="primary"
+            onClick={editAssetTable}
+            className={!isAdd ? "not-hidden" : "hidden"}
+          >
+            Save
           </Button>
         </Modal.Footer>
       </Modal>

@@ -73,10 +73,10 @@
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 .not-hidden {
-  display: block;
+  display: block !important;
 }
 .error-message {
   display: block;
