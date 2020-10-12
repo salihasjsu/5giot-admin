@@ -11,8 +11,10 @@ import { Col, Nav, Row } from "react-bootstrap";
 import "../../styles/dashboard.css";
 import AssetPage from "../assetComponent/assetPage";
 import Header from "./header.js";
-import Page from "./page";
+import MainDashboardPage from "./mainDashboardPage";
 import Sidebar from "./sidebar.js";
+import RealtimePage from "../realTimeDataComponent/realtimePage";
+import DefaultMap from "../realTimeDataComponent/map";
 export default function Dashboard() {
   /*************** DATA ****************** */
   const [showPage, setShowPage] = useState({
@@ -20,10 +22,17 @@ export default function Dashboard() {
     isAsset: false,
     isStat: false,
     isMap: false,
+    isReal: false,
   });
   /************** Methods ***************** */
   function showTab(prop) {
-    setShowPage({ isMain: false, isAsset: false, isStat: false, isMap: false });
+    setShowPage({
+      isMain: false,
+      isAsset: false,
+      isStat: false,
+      isMap: false,
+      isReal: false,
+    });
   }
   return (
     <div className="dashboard-bg container-fluid ">
@@ -43,6 +52,7 @@ export default function Dashboard() {
                     isAsset: false,
                     isStat: false,
                     isMap: false,
+                    isReal: false,
                   })
                 }
               >
@@ -68,6 +78,7 @@ export default function Dashboard() {
                     isAsset: true,
                     isStat: false,
                     isMap: false,
+                    isReal: false,
                   })
                 }
               >
@@ -93,6 +104,7 @@ export default function Dashboard() {
                     isAsset: false,
                     isStat: true,
                     isMap: false,
+                    isReal: false,
                   })
                 }
               >
@@ -118,6 +130,7 @@ export default function Dashboard() {
                     isAsset: false,
                     isStat: false,
                     isMap: true,
+                    isReal: false,
                   })
                 }
               >
@@ -135,7 +148,18 @@ export default function Dashboard() {
                   <Col sm="10">Map</Col>
                 </Row>
               </Nav.Link>
-              <Nav.Link eventKey="link3">
+              <Nav.Link
+                eventKey="real"
+                onClick={() =>
+                  setShowPage({
+                    isMain: false,
+                    isAsset: false,
+                    isStat: false,
+                    isMap: false,
+                    isReal: true,
+                  })
+                }
+              >
                 <Row>
                   <Col sm="2">
                     <span>
@@ -156,10 +180,16 @@ export default function Dashboard() {
         <Col sm="9">
           <div style={{ width: "1000px", paddingTop: "5%" }}>
             <div className={showPage.isMain ? "not-hidden" : "hidden"}>
-              <Page />
+              <MainDashboardPage />
             </div>
             <div className={showPage.isAsset ? "not-hidden" : "hidden"}>
               <AssetPage />
+            </div>
+            <div className={showPage.isMap ? "not-hidden" : "hidden"}>
+              <DefaultMap />
+            </div>
+            <div className={showPage.isReal ? "not-hidden" : "hidden"}>
+              <RealtimePage />
             </div>
           </div>
         </Col>

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Card, Col } from "react-bootstrap";
+import { Card, Col, Toast, ToastHeader, ToastBody } from "react-bootstrap";
 import CustomizedTable from "../sharedComponents/customizedTable";
 import { assetColumns, userColumns } from "../sharedComponents/tableColumns";
 import { getAssets } from "../assetComponent/assetService";
 import { getApolloClient } from "../apolloClient";
 import { getUsers } from "../userComponent/userService";
-export default function Page() {
+import RealTimePage from "../realTimeDataComponent/realtimePage";
+export default function MainDashboardPage() {
   const columns = React.useMemo(() => assetColumns, []);
   const userTable = React.useMemo(() => userColumns, []);
   const [assets, setAssets] = useState([]);
@@ -54,6 +55,23 @@ export default function Page() {
   );
   return (
     <div>
+      <div className="row">
+        <Col sm={4} style={{ fontSize: "1.5rem" }}>
+          {new Date().toLocaleString(undefined, {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            time: "numeric",
+          })}
+        </Col>
+        <Col style={{ fontSize: "1.5rem" }}>
+          {" "}
+          {new Date().toLocaleTimeString()}
+        </Col>
+      </div>
+      <hr />
+      <div className="row"></div>
       <div className="row" style={{ paddingTop: "10px" }}>
         <Col sm="6">
           <Card style={{ height: "40vh" }}>
@@ -76,7 +94,7 @@ export default function Page() {
       <div className="row" style={{ paddingTop: "10px" }}>
         <Col sm="6">
           <Card style={{ height: "40vh" }}>
-            <Card.Header className="bg-info text-white">Location</Card.Header>
+            <Card.Header className="bg-info text-white">Map</Card.Header>
             <Card.Body style={{ backgroundColor: "white" }}>
               <Card.Text></Card.Text>
             </Card.Body>

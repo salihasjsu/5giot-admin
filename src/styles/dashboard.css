@@ -1,10 +1,13 @@
 .dashboard-bg {
-  background-color: #0b5574;
-  background-image: url("../images/btstrp-bg1.jpg");
+  /*background-color: #0b5574;*/
+  /*background-image: url("../images/btstrp-bg1.jpg");*/
   min-height: 100vh;
   font-family: "Poppins", sans-serif;
 }
 
+.dashboard-panel {
+  height: 50px !important;
+}
 .nav .active {
   border-right: 2px solid #015ec6;
 }

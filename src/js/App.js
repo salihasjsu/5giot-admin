@@ -7,6 +7,7 @@ import Login from "./userComponent/login";
 import NetworkError from "./networkError";
 import Signup from "./userComponent//signup";
 import ForgotPassword from "./userComponent/forgotPassword";
+import RealTimePage from "./realTimeDataComponent/realtimePage";
 import "../styles/pace.css";
 import AppContext from "./appContext";
 import { useState } from "reactn";
