@@ -1,5 +1,9 @@
-import React, { useEffect } from "react";
-import { useTable, useSortBy, usePagination, useRowSelect } from "react-table";
+import React from "react";
+import {
+  useTable,
+  useSortBy,
+  usePagination /*useRowSelect */,
+} from "react-table";
 import { Col } from "react-bootstrap";
 import styled from "styled-components";
 const Styles = styled.div`
@@ -47,18 +51,18 @@ export default function CustomizedTable({ columns, data }) {
     headerGroups,
     prepareRow,
     page,
-    rows,
+    /*rows,*/
     canPreviousPage,
     canNextPage,
-    pageOptions,
+    /*pageOptions,*/
     pageCount,
     gotoPage,
     nextPage,
     previousPage,
     setPageSize,
-    selectedFlatRows,
+    /* selectedFlatRows,*/
 
-    state: { pageIndex, pageSize },
+    state: { /*pageIndex,*/ pageSize },
   } = useTable(
     {
       columns,

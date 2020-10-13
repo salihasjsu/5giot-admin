@@ -25,7 +25,7 @@ export default function Dashboard() {
     isReal: false,
   });
   /************** Methods ***************** */
-  function showTab(prop) {
+  /* function showTab(prop) {
     setShowPage({
       isMain: false,
       isAsset: false,
@@ -33,7 +33,7 @@ export default function Dashboard() {
       isMap: false,
       isReal: false,
     });
-  }
+  }*/
   return (
     <div className="dashboard-bg container-fluid ">
       <Row>

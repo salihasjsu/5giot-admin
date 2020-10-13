@@ -1,7 +1,5 @@
-import { useMutation } from "@apollo/react-hooks";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import gql from "graphql-tag";
 import React, { useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
@@ -11,7 +9,7 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState({ isError: false, message: "" });
   let history = useHistory();
-
+  /*
   const [forgotPassword] = useMutation(gql`
     mutation Login($userName: String!, $password: String!) {
       login(userName: $userName, password: $password) {
@@ -19,7 +17,7 @@ export default function ForgotPassword() {
         accessToken
       }
     }
-  `);
+  `);*/
   function validateForm() {
     return email.length > 0 > 0;
   }

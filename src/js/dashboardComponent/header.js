@@ -100,7 +100,11 @@ export default function Header() {
           {user.lastName.charAt(0).toUpperCase() + user.lastName.slice(1)}
         </Navbar.Brand>
         <Navbar.Collapse className="justify-content-end">
-          <img src={userIcon} style={{ width: "40px", height: "40px" }} />
+          <img
+            src={userIcon}
+            style={{ width: "40px", height: "40px" }}
+            alt=""
+          />
           <NavDropdown
             title={
               <span className="dropdown-text">

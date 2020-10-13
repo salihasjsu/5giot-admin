@@ -1,6 +1,5 @@
 import { faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import gql from "graphql-tag";
 import React, { useEffect, useState } from "react";
 import { Button, Card, Form, Modal, Row } from "react-bootstrap";
 import "../../styles/asset.css";
@@ -72,7 +71,7 @@ export default function AssetPage() {
                 console.log("Assets in delete", assets);
                 deleteAsset(dataCopy[tableProps.row.index])
                   .then((response) => {
-                    if (response.data.deleteAsset.code == "200") {
+                    if (response.data.deleteAsset.code === "200") {
                       dataCopy.splice(tableProps.row.index, 1);
                       setAssets(dataCopy);
                     }
@@ -198,7 +197,7 @@ export default function AssetPage() {
           status: assetObj.status,
         },
       });
-    } else if (action == "edit") {
+    } else if (action === "edit") {
       return apolloClient.mutate({
         mutation: updateAsset,
         variables: {

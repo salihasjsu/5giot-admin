@@ -3,7 +3,7 @@ import "../../styles/sidebar.css";
 export default function Sidebar({ width, height, children }) {
   const [xPosition, setX] = React.useState(-width);
 
-  const toggleMenu = () => {
+  /*const toggleMenu = () => {
     console.log(xPosition);
     if (xPosition < 0) {
       setX(0);
@@ -11,7 +11,7 @@ export default function Sidebar({ width, height, children }) {
       setX(-width);
     }
   };
-
+*/
   React.useEffect(() => {
     setX(0);
   }, []);

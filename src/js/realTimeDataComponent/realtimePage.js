@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Button, Container } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import Chart from "chart.js";
 import "../../styles/realtime.css";
 const chartData = {
@@ -66,7 +66,7 @@ let device_id = "";
 /**** END Chart Configurations ******* */
 
 export default function RealTimePage() {
-  const [isStop, setStop] = useState(true);
+  const [isStop, setStop] = useState(false);
   const [devices, setDevices] = useState([]);
   const [listDevices, setListDevices] = useState([]);
   const [selectedDevice, setSelectedDevice] = useState("");
@@ -85,19 +85,23 @@ export default function RealTimePage() {
       ws.current.close();
     };
   }, []);
-
   useEffect(() => {
-    if (chartContainer && chartContainer.current) {
-      const newChartInst = new Chart(chartContainer.current, chartConfig);
-      setCharInst(newChartInst);
+    console.log("list of devices", listDevices);
+  }, [listDevices]);
+  useEffect(() => {
+    if (!chartInst) {
+      console.log("chart continer", chartContainer);
+
+      if (chartContainer && chartContainer.current) {
+        const newChartInst = new Chart(chartContainer.current, chartConfig);
+        setCharInst(newChartInst);
+      }
     }
-  }, [chartContainer]);
+    console.log("chart instance", chartInst);
+  }, [chartContainer, chartInst]);
 
   useEffect(() => {
     if (!ws.current) return;
-
-    //  const ctx = document.getElementById("myChart").getContext("2d");
-
     ws.current.onmessage = (e) => {
       if (isStop) return;
       const messageData = JSON.parse(e.data);
@@ -111,9 +115,10 @@ export default function RealTimePage() {
       } else {
         //Check if it is a new device or exisiting one
         const existingDeviceIndex = findDevice(messageData.DeviceId);
+
         if (existingDeviceIndex == null) {
-          if (listDevices.length == 0) {
-            console.log("selecting the first encountered device");
+          if (devices.length === 0) {
+            console.log("selecting the first encountered device"); //selecting the first device if nothing is selected
             setSelectedDevice(messageData.DeviceId);
             device_id = messageData.DeviceId;
           }
@@ -136,6 +141,7 @@ export default function RealTimePage() {
         );
 
         if (device_id === messageData.DeviceId) {
+          console.log(devices);
           console.log("update chart for device:", device_id);
           chartInst.data.labels = devices[index].timeData;
           chartInst.data.datasets[0].data = devices[index].temperatureData;
@@ -144,7 +150,7 @@ export default function RealTimePage() {
         }
       }
     };
-  }, [isStop]);
+  }, [isStop, chartInst]);
 
   /****************** FUNCTIONS**************** */
   function initDevice() {
@@ -165,7 +171,7 @@ export default function RealTimePage() {
   function addDeviceData(id, time, temperature, humidity) {
     const existingDeviceIndex = findDevice(id);
     if (existingDeviceIndex == null) {
-      console.log("new device so going to add in device");
+      console.log("new device so going to add data of device");
       var dataCopy = devices;
       var obj = initDevice();
       obj.deviceId = id;
@@ -174,6 +180,7 @@ export default function RealTimePage() {
       obj.humidityData.push(humidity);
       dataCopy.push(obj);
       setDevices(dataCopy);
+      //setDevices((devices) => [...devices, obj]);
     } else {
       devices[existingDeviceIndex].timeData.push(time);
       devices[existingDeviceIndex].temperatureData.push(temperature);
@@ -187,7 +194,6 @@ export default function RealTimePage() {
   }
   // Find a device based on its Id
   function findDevice(deviceId) {
-    console.log("devices length", devices.length);
     for (let i = 0; i < devices.length; ++i) {
       if (devices[i].deviceId === deviceId) {
         return i;

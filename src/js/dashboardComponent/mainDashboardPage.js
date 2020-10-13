@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Card, Col, Toast, ToastHeader, ToastBody } from "react-bootstrap";
+import { Card, Col } from "react-bootstrap";
 import CustomizedTable from "../sharedComponents/customizedTable";
 import { assetColumns, userColumns } from "../sharedComponents/tableColumns";
 import { getAssets } from "../assetComponent/assetService";
 import { getApolloClient } from "../apolloClient";
 import { getUsers } from "../userComponent/userService";
-import RealTimePage from "../realTimeDataComponent/realtimePage";
 export default function MainDashboardPage() {
   const columns = React.useMemo(() => assetColumns, []);
   const userTable = React.useMemo(() => userColumns, []);

@@ -97,7 +97,7 @@ export default function Signup() {
             <div className="login-content col-lg-11 offset-lg-1">
               <div className="form-group" style={{ marginTop: "120px" }}>
                 <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12 login-heading-btn">
-                  <img className="col-sm-3 -padding" src={line190} />
+                  <img className="col-sm-3 -padding" src={line190} alt="" />
                   <span
                     style={{
                       color: "#00ffcb",
@@ -107,7 +107,7 @@ export default function Signup() {
                   >
                     Register User
                   </span>
-                  <img className="col-sm-3 -padding" src={line191} />
+                  <img className="col-sm-3 -padding" src={line191} alt="" />
                 </div>
                 <Form className="mt-40 margin-bottom-0">
                   <Form.Group
