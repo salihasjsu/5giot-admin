@@ -21,7 +21,7 @@ function createClient() {
     },
     request: (operation) => {
       const tokens = getTokens();
-      console.log("TOKENS" + tokens);
+      // console.log("TOKENS" + tokens);
       if (tokens && tokens.accessToken) {
         operation.setContext({
           headers: {

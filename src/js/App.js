@@ -23,7 +23,6 @@ function App() {
   return (
     <AppContext.Provider value={userSettings}>
       <React.Fragment>
-        <div className="pace FadeAnim"></div>
         <div>
           <Router>
             <Switch>

@@ -2,71 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button } from "react-bootstrap";
 import Chart from "chart.js";
 import "../../styles/realtime.css";
-const chartData = {
-  datasets: [
-    {
-      fill: false,
-      label: "Temperature",
-      yAxisID: "Temperature",
-      borderColor: "rgba(255, 204, 0, 1)",
-      pointBoarderColor: "rgba(255, 204, 0, 1)",
-      backgroundColor: "rgba(255, 204, 0, 0.4)",
-      pointHoverBackgroundColor: "rgba(255, 204, 0, 1)",
-      pointHoverBorderColor: "rgba(255, 204, 0, 1)",
-      spanGaps: true,
-    },
-    {
-      fill: false,
-      label: "Humidity",
-      yAxisID: "Humidity",
-      borderColor: "rgba(24, 120, 240, 1)",
-      pointBoarderColor: "rgba(24, 120, 240, 1)",
-      backgroundColor: "rgba(24, 120, 240, 0.4)",
-      pointHoverBackgroundColor: "rgba(24, 120, 240, 1)",
-      pointHoverBorderColor: "rgba(24, 120, 240, 1)",
-      spanGaps: true,
-    },
-  ],
-};
-
-const chartOptions = {
-  scales: {
-    yAxes: [
-      {
-        id: "Temperature",
-        type: "linear",
-        scaleLabel: {
-          labelString: "Temperature (ºC)",
-          display: true,
-        },
-        position: "left",
-      },
-      {
-        id: "Humidity",
-        type: "linear",
-        scaleLabel: {
-          labelString: "Humidity (%)",
-          display: true,
-        },
-        position: "right",
-      },
-    ],
-    tooltips: {
-      mode: "index",
-    },
-  },
-};
-const chartConfig = {
-  type: "line",
-  data: chartData,
-  options: chartOptions,
-};
-const maxLength = 20;
+import { chartConfig } from "../sharedComponents/chartConfig";
+const maxLength = 10;
 let device_id = "";
 /**** END Chart Configurations ******* */
 
 export default function RealTimePage() {
-  const [isStop, setStop] = useState(false);
+  const [isStop, setStop] = useState(true);
   const [devices, setDevices] = useState([]);
   const [listDevices, setListDevices] = useState([]);
   const [selectedDevice, setSelectedDevice] = useState("");
@@ -90,8 +32,6 @@ export default function RealTimePage() {
   }, [listDevices]);
   useEffect(() => {
     if (!chartInst) {
-      console.log("chart continer", chartContainer);
-
       if (chartContainer && chartContainer.current) {
         const newChartInst = new Chart(chartContainer.current, chartConfig);
         setCharInst(newChartInst);
@@ -101,6 +41,41 @@ export default function RealTimePage() {
   }, [chartContainer, chartInst]);
 
   useEffect(() => {
+    // Find a device based on its Id
+    const findDevice = (deviceId) => {
+      for (let i = 0; i < devices.length; ++i) {
+        if (devices[i].deviceId === deviceId) {
+          return i;
+        }
+      }
+
+      return null;
+    };
+
+    const addDeviceData = (id, time, temperature, humidity) => {
+      const existingDeviceIndex = findDevice(id);
+      if (existingDeviceIndex == null) {
+        console.log("new device so going to add data of device");
+        var dataCopy = devices;
+        var obj = initDevice();
+        obj.deviceId = id;
+        obj.timeData.push(time);
+        obj.temperatureData.push(temperature);
+        obj.humidityData.push(humidity);
+        dataCopy.push(obj);
+        setDevices(dataCopy);
+        //setDevices((devices) => [...devices, obj]);
+      } else {
+        devices[existingDeviceIndex].timeData.push(time);
+        devices[existingDeviceIndex].temperatureData.push(temperature);
+        devices[existingDeviceIndex].humidityData.push(humidity);
+        if (devices[existingDeviceIndex].timeData.length > maxLength) {
+          devices[existingDeviceIndex].timeData.shift();
+          devices[existingDeviceIndex].temperatureData.shift();
+          devices[existingDeviceIndex].humidityData.shift();
+        }
+      }
+    };
     if (!ws.current) return;
     ws.current.onmessage = (e) => {
       if (isStop) return;
@@ -136,11 +111,9 @@ export default function RealTimePage() {
           messageData.IotData.temperature,
           messageData.IotData.humidity
         );
-        const index = devices.findIndex(
-          (x) => x.deviceId === messageData.DeviceId
-        );
+        const index = devices.findIndex((x) => x.deviceId === device_id);
 
-        if (device_id === messageData.DeviceId) {
+        if (device_id == messageData.DeviceId) {
           console.log(devices);
           console.log("update chart for device:", device_id);
           chartInst.data.labels = devices[index].timeData;
@@ -168,40 +141,6 @@ export default function RealTimePage() {
     device_id = e.target.value;
   }
 
-  function addDeviceData(id, time, temperature, humidity) {
-    const existingDeviceIndex = findDevice(id);
-    if (existingDeviceIndex == null) {
-      console.log("new device so going to add data of device");
-      var dataCopy = devices;
-      var obj = initDevice();
-      obj.deviceId = id;
-      obj.timeData.push(time);
-      obj.temperatureData.push(temperature);
-      obj.humidityData.push(humidity);
-      dataCopy.push(obj);
-      setDevices(dataCopy);
-      //setDevices((devices) => [...devices, obj]);
-    } else {
-      devices[existingDeviceIndex].timeData.push(time);
-      devices[existingDeviceIndex].temperatureData.push(temperature);
-      devices[existingDeviceIndex].humidityData.push(humidity);
-      if (devices[existingDeviceIndex].timeData.length > maxLength) {
-        devices[existingDeviceIndex].timeData.shift();
-        devices[existingDeviceIndex].temperatureData.shift();
-        devices[existingDeviceIndex].humidityData.shift();
-      }
-    }
-  }
-  // Find a device based on its Id
-  function findDevice(deviceId) {
-    for (let i = 0; i < devices.length; ++i) {
-      if (devices[i].deviceId === deviceId) {
-        return i;
-      }
-    }
-
-    return null;
-  }
   return (
     <div>
       <div className="row realtime-header">
@@ -213,7 +152,7 @@ export default function RealTimePage() {
             name="Devices"
             onChange={onDeviceSelect}
             value={selectedDevice}
-            style={{}}
+            style={{ width: "200px" }}
           >
             {listDevices.map((e, i) => {
               return (
@@ -226,7 +165,11 @@ export default function RealTimePage() {
         </div>
         <div className="col-sm-4">
           {" "}
-          <Button onClick={() => setStop(!isStop)}>
+          <Button
+            onClick={() => setStop(!isStop)}
+            className="btn-success "
+            style={{ width: "100px" }}
+          >
             {isStop ? "Start" : "Stop"}
           </Button>
         </div>
@@ -234,7 +177,7 @@ export default function RealTimePage() {
       <div className="row">
         <canvas
           ref={chartContainer}
-          style={{ width: "400px !important", height: "400px !important" }}
+          style={{ width: "500px !important", height: "400px !important" }}
         />
       </div>
     </div>

@@ -14,7 +14,7 @@ export default function Header() {
   const appContext = useContext(AppContext);
   const [show, setShow] = useState(false);
   const [error, setError] = useState({ isError: false, message: "" });
-  const [user, setUser] = useState(
+  const [user] = useState(
     appContext.globalState.user ? appContext.globalState.user : getUserToken()
   );
   let history = useHistory();

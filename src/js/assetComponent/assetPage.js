@@ -11,15 +11,27 @@ import {
   updateAsset,
   removeAsset,
 } from "./assetService.js";
+import { getWSClient } from "../websocketClient";
 export default function AssetPage() {
   const [assets, setAssets] = useState([]);
-
   const [editIndex, setEditIndex] = useState("");
   const [isAdd, setIsAdd] = useState(true);
   const [assetObj, setAssetObj] = useState(initAsset());
+
   useEffect(() => {
+    const initializeAssetsApi = () => {
+      queryAssets()
+        .then((response) => {
+          console.log(response);
+          setAssets(response.data.assets);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+      return "";
+    };
     if (!assets.length > 0) initializeAssetsApi();
-  }, []);
+  }, [assets]);
   const columns = React.useMemo(
     () => [
       { Header: "Name", accessor: "name" },
@@ -67,8 +79,6 @@ export default function AssetPage() {
               onClick={(e) => {
                 let dataCopy = {};
                 dataCopy = [...assets];
-
-                console.log("Assets in delete", assets);
                 deleteAsset(dataCopy[tableProps.row.index])
                   .then((response) => {
                     if (response.data.deleteAsset.code === "200") {
@@ -106,28 +116,28 @@ export default function AssetPage() {
     };
   }
 
-  const [selectedRows, setSelectedRows] = useState([]);
+  /*const [selectedRows, setSelectedRows] = useState([]);*/
   const [error, setError] = useState({ isError: false, message: "" });
 
-  useEffect(
+  /*useEffect(
     () => {
       console.log("assets: ", assets);
     },
     [assets],
     [assetObj]
-  );
+  );*/
   /* useEffect(() => {
     console.log("selected rows: ", selectedRows);
   }, [selectedRows]);*/
   /****************Methods ********************** */
-  const onSelectedRows = (rows) => {
+  /*const onSelectedRows = (rows) => {
     //console.log("Row Selection");
     const mappedRows = rows.map((r) => r.original);
     setSelectedRows(mappedRows);
     //console.log("Selected Rows: ", selectedRows);
-  };
+  };*/
   const showAddModal = () => {
-    console.log("Show model -assets", assets);
+    //console.log("Show model -assets", assets);
     setShowAdd(true);
   };
   function handleAddClose() {
@@ -135,16 +145,6 @@ export default function AssetPage() {
     setShowAdd(false);
     setIsAdd(true);
   }
-  const initializeAssetsApi = () => {
-    queryAssets()
-      .then((response) => {
-        setAssets(response.data.assets);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-    return "";
-  };
 
   const addAssetTable = () => {
     setError({ isError: false, message: "" });
@@ -154,13 +154,13 @@ export default function AssetPage() {
     }
     postAsset("add")
       .then((response) => {
-        console.log(response.data);
+        //console.log(response.data);
         assetObj._id = response.data.addAsset.message;
         setAssets((prevState) => [...prevState, assetObj]);
         setShowAdd(false);
         setAssetObj(initAsset());
       })
-      .catch((err) => console.error(err));
+      .catch((err) => console.log(err));
   };
   const editAssetTable = () => {
     postAsset("edit")
@@ -196,6 +196,12 @@ export default function AssetPage() {
           imei: assetObj.imei,
           status: assetObj.status,
         },
+        /*   update: (cache, { data: { addAsset } }) => {
+          const data = cache.readQuery({ query: getAssets });
+          console.log("Cached data", data.assets);
+          data.assets = [...data.assets, addAsset.message];
+          //cache.writeQuery({ query: getAssets });
+        },*/
       });
     } else if (action === "edit") {
       return apolloClient.mutate({

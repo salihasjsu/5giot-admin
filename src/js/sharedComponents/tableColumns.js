@@ -27,7 +27,7 @@ const userColumns = [
     accessor: "contactNumber",
   },
   {
-    Header: "role",
+    Header: "Role",
     accessor: "role",
   },
 ];

@@ -15,6 +15,7 @@ import MainDashboardPage from "./mainDashboardPage";
 import Sidebar from "./sidebar.js";
 import RealtimePage from "../realTimeDataComponent/realtimePage";
 import DefaultMap from "../realTimeDataComponent/map";
+let refresh = false;
 export default function Dashboard() {
   /*************** DATA ****************** */
   const [showPage, setShowPage] = useState({
@@ -180,17 +181,16 @@ export default function Dashboard() {
         <Col sm="9">
           <div style={{ width: "1000px", paddingTop: "5%" }}>
             <div className={showPage.isMain ? "not-hidden" : "hidden"}>
-              <MainDashboardPage />
+              {showPage.isMain && <MainDashboardPage />}
             </div>
             <div className={showPage.isAsset ? "not-hidden" : "hidden"}>
+              {" "}
               <AssetPage />
             </div>
             <div className={showPage.isMap ? "not-hidden" : "hidden"}>
               <DefaultMap />
             </div>
-            <div className={showPage.isReal ? "not-hidden" : "hidden"}>
-              <RealtimePage />
-            </div>
+            <div className={showPage.isReal ? "not-hidden" : "hidden"}></div>
           </div>
         </Col>
       </Row>
