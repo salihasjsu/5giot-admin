@@ -11,7 +11,6 @@ const Styles = styled.div`
 
   table {
     width: 100%;
-    height: 30%;
     border-spacing: 0;
     border: 1px solid #a9a3a3;
     line-height: 1.6;
@@ -47,7 +46,12 @@ const Styles = styled.div`
     padding: 1rem;
   }
 `;
-export default function CustomizedTable({ columns, data }) {
+export default function CustomizedTable({
+  columns,
+  data,
+  tHeadStyle,
+  minPageSize,
+}) {
   const {
     getTableProps,
     getTableBodyProps,
@@ -70,7 +74,7 @@ export default function CustomizedTable({ columns, data }) {
     {
       columns,
       data,
-      initialState: { pageIndex: 0, pageSize: 5 },
+      initialState: { pageIndex: 0, pageSize: minPageSize },
     },
     useSortBy,
     usePagination
@@ -82,7 +86,7 @@ export default function CustomizedTable({ columns, data }) {
     <>
       <Styles>
         <table {...getTableProps()}>
-          <thead>
+          <thead style={tHeadStyle}>
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
@@ -116,7 +120,7 @@ export default function CustomizedTable({ columns, data }) {
             })}
           </tbody>
         </table>
-        <div className="pagination" style={{ marginTop: "50px" }}>
+        <div className="pagination" style={{ marginTop: "10px" }}>
           <div>
             {" "}
             <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
@@ -164,7 +168,7 @@ export default function CustomizedTable({ columns, data }) {
                 setPageSize(Number(e.target.value));
               }}
             >
-              {[5, 10, 20, 30, 50].map((pageSize) => (
+              {[minPageSize, 10, 20, 30, 50].map((pageSize) => (
                 <option key={pageSize} value={pageSize}>
                   Show {pageSize}
                 </option>

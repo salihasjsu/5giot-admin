@@ -21,7 +21,3 @@
   border-color: #00ffcb;
   border-left: 0;
 }
-
-button:focus {
-  outline: 0px !important;
-}

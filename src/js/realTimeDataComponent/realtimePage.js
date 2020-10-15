@@ -14,8 +14,8 @@ export default function RealTimePage({ showBtn, width, height, chartMain }) {
   const [listDevices, setListDevices] = useState([]);
   const [selectedDevice, setSelectedDevice] = useState("");
   const ws = useRef(null);
-  const chartContainer = useRef(chartMain);
-  const [chartInst, setCharInst] = useState(null);
+  const chartContainer = useRef(null);
+  const [chartInst, setCharInst] = useState(chartMain);
   /*useEffect(() => {
     ws.current = new WebSocket("ws://127.0.0.1:9001");
     ws.current.onopen = () => {
@@ -39,14 +39,14 @@ export default function RealTimePage({ showBtn, width, height, chartMain }) {
     console.log("list of devices", listDevices);
   }, [listDevices]);
   useEffect(() => {
-    // if (!chartInst) {
-    console.log("chart container", chartContainer);
-    if (chartContainer && chartContainer.current) {
-      console.log("Creating New chart instance");
-      const newChartInst = new Chart(chartContainer.current, chartConfig());
-      setCharInst(newChartInst);
+    if (!chartInst) {
+      console.log("chart container", chartContainer);
+      if (chartContainer && chartContainer.current) {
+        console.log("Creating New chart instance");
+        const newChartInst = new Chart(chartContainer.current, chartConfig());
+        setCharInst(newChartInst);
+      }
     }
-    // }
     //  }
   }, []);
   useEffect(() => {

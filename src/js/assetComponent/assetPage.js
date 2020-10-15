@@ -282,7 +282,16 @@ export default function AssetPage() {
             </Button>{" "}
           </Row>
           <div id="customTable">
-            <CustomizedTable columns={columns} data={assets} />
+            <CustomizedTable
+              columns={columns}
+              data={assets}
+              tHeadStyle={{
+                backgroundColor: "#f8f9fc",
+                textAlign: "center",
+                fontFamily: "poppins-medium",
+              }}
+              minPageSize={3}
+            />
           </div>
         </Card.Body>
       </Card>

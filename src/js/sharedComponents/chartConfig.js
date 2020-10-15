@@ -2,7 +2,7 @@ var config = null;
 const chartData = {
   datasets: [
     {
-      fill: false,
+      fill: true,
       label: "Temperature",
       yAxisID: "Temperature",
       borderColor: "rgba(255, 204, 0, 1)",
@@ -13,7 +13,7 @@ const chartData = {
       spanGaps: true,
     },
     {
-      fill: false,
+      fill: true,
       label: "Humidity",
       yAxisID: "Humidity",
       borderColor: "rgba(24, 120, 240, 1)",

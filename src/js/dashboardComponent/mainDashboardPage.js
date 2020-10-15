@@ -9,6 +9,8 @@ import Map from "../realTimeDataComponent/map";
 import RealTimePage from "../realTimeDataComponent/realtimePage";
 import { chartConfig } from "../sharedComponents/chartConfig";
 import Chart from "chart.js";
+import { faUser, faCubes } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 export default function MainDashboardPage() {
   const columns = React.useMemo(() => assetColumns, []);
   const userTable = React.useMemo(() => userColumns, []);
@@ -16,13 +18,15 @@ export default function MainDashboardPage() {
   const [users, setUsers] = useState([]);
   const chartMain = useRef(null);
   const [chart, setChart] = useState(null);
+  const [activeAssets, setActiveAssets] = useState(0);
+  const [inactiveAssets, setInactiveAssets] = useState(0);
   useEffect(() => {
     if (chartMain && chartMain.current) {
       console.log("Creating New chart instance");
       const newChartInst = new Chart(chartMain.current, chartConfig());
       setChart(newChartInst);
     }
-  });
+  }, [chartMain]);
 
   useEffect(() => {
     let apolloClient = getApolloClient();
@@ -32,7 +36,15 @@ export default function MainDashboardPage() {
           query: getAssets,
         })
         .then((response) => {
+          let active = 0;
+          let inactive = 0;
           setAssetsMain(response.data.assets);
+          for (var i = 0; i < response.data.assets.length; i++) {
+            if (response.data.assets[i].status === "Active") active++;
+            else inactive++;
+          }
+          setActiveAssets(active);
+          setInactiveAssets(inactive);
         })
         .catch((err) => {
           console.error(err);
@@ -62,69 +74,170 @@ export default function MainDashboardPage() {
     }
   }, [users, assetsMain]);
   return (
-    <div>
+    <div style={{ backgroundImage: "url(../images/login-bg/loginbg.png)" }}>
       <div className="row">
-        <Col sm={5} style={{ fontSize: "1.5rem" }}>
-          {new Date().toLocaleString(undefined, {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            time: "numeric",
-          })}
+        <Col sm={6}>
+          <h3 className="font-weight-bold">Dashboard</h3>
         </Col>
-        <Col style={{ fontSize: "1.5rem" }}>
-          {" "}
-          {new Date().toLocaleTimeString()}
+        <Col sm={6}>
+          <h4>
+            {new Date().toLocaleString(undefined, {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              time: "numeric",
+            })}
+            <span> {new Date().toLocaleTimeString()}</span>
+          </h4>
         </Col>
       </div>
       <hr />
-      <Row>
-        <Col sm="12">
-          <Card style={{ height: "50vh" }}>
-            <Card.Header className="bg-warning text-white">
+      <Row style={{ paddingTop: "3%" }}>
+        <Col sm={4}>
+          <Card className="shadow " style={{ borderLeft: "4px solid #36b9cc" }}>
+            <Card.Body>
+              <Row className="no-gutters align-items-center">
+                <Col className="mr-2">
+                  <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                    users
+                  </div>
+                  <div className="h5 mb-0 font-weight-bold text-gray-800">
+                    {users.length === 0 ? "" : users.length}
+                  </div>
+                </Col>
+                <Col sm="auto">
+                  <i style={{ color: "#dddfeb ", fontSize: "2em" }}>
+                    <FontAwesomeIcon icon={faUser} />
+                  </i>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col sm={4}>
+          <Card className="shadow " style={{ borderLeft: "4px solid #fd7e14" }}>
+            <Card.Body>
+              <Row className="no-gutters align-items-center">
+                <Col className="mr-2">
+                  <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                    Active Devices
+                  </div>
+                  <div className="h5 mb-0 font-weight-bold text-gray-800">
+                    {activeAssets}
+                  </div>
+                </Col>
+                <Col sm="auto">
+                  <i>
+                    <FontAwesomeIcon
+                      icon={faCubes}
+                      style={{ color: "#dddfeb", fontSize: "2em" }}
+                    />
+                  </i>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col sm={4}>
+          <Card className="shadow " style={{ borderLeft: "4px solid #f6c23e" }}>
+            <Card.Body>
+              <Row className="no-gutters align-items-center">
+                <Col className="mr-2">
+                  <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                    Inactive Devices
+                  </div>
+                  <div className="h5 mb-0 font-weight-bold text-gray-800">
+                    {inactiveAssets}
+                  </div>
+                </Col>
+                <Col sm="auto">
+                  <i style={{ color: "#dddfeb", fontSize: "2em" }}>
+                    <FontAwesomeIcon icon={faCubes} />
+                  </i>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
+      <Row style={{ paddingTop: "3%" }}>
+        <Col sm={{ span: "10", offset: "1" }}>
+          <Card style={{ height: "60vh" }} className="shadow">
+            <Card.Header
+              className="text-white font-weight-bold bg-secondary"
+              style={{
+                backgroundColor: "#f8f9fc",
+                borderBottom: "x 1px solid #e3e6f0",
+              }}
+            >
               Statistics
             </Card.Header>
-            <Card.Body style={{ overflow: "scroll" }}>
+            <Card.Body>
               <RealTimePage
                 width={"20%"}
                 height={"5%"}
                 showBtn={false}
-                chartMain={chartMain}
+                chartMain={chart}
               />
             </Card.Body>
           </Card>
         </Col>
       </Row>
-      <div className="row" style={{ paddingTop: "10px" }}>
-        <Col sm="12">
-          <Card style={{ height: "50vh" }}>
-            <Card.Header className="bg-info text-white">Map</Card.Header>
+      <Row style={{ paddingTop: "5%" }}>
+        <Col sm={{ span: "8", offset: "2" }}>
+          <Card style={{ height: "60vh" }} className="shadow">
+            <Card.Header className="bg-info font-weight-bold text-white">
+              Location
+            </Card.Header>
             <Card.Body style={{ backgroundColor: "white", overflow: "scroll" }}>
-              <Map />
+              <Map width={"100%"} height={"100%"} />
             </Card.Body>
           </Card>
         </Col>
-      </div>
-
-      <div className="row" style={{ paddingTop: "10px" }}>
+      </Row>
+      <Row style={{ paddingTop: "3%" }}>
         <Col sm="6">
-          <Card style={{ height: "40vh", overflow: "scroll" }}>
-            <Card.Header className="bg-primary text-white">Users</Card.Header>
-            <Card.Body>
-              <CustomizedTable columns={userTable} data={users} />
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col sm="6">
-          <Card style={{ height: "40vh", overflow: "scroll" }}>
-            <Card.Header className="bg-success text-white">Assets</Card.Header>
+          <Card style={{ height: "50vh" }} className="shadow">
+            <Card.Header className="bg-success font-weight-bold text-white">
+              Assets
+            </Card.Header>
             <Card.Body style={{ backgroundColor: "white" }}>
-              <CustomizedTable columns={columns} data={assetsMain} />
+              <CustomizedTable
+                columns={columns}
+                data={assetsMain}
+                tHeadStyle={{
+                  backgroundColor: "#f8f9fc",
+                  textAlign: "center",
+                  fontFamily: "poppins-medium",
+                }}
+                minPageSize={2}
+              />
             </Card.Body>
           </Card>
         </Col>
-      </div>
+
+        <Col sm="6">
+          <Card style={{ height: "50vh" }} className="shadow">
+            <Card.Header className="bg-primary font-weight-bold text-white">
+              Users
+            </Card.Header>
+            <Card.Body>
+              <CustomizedTable
+                columns={userTable}
+                data={users}
+                tHeadStyle={{
+                  backgroundColor: "#f8f9fc",
+                  textAlign: "center",
+                  fontFamily: "poppins-medium",
+                }}
+                minPageSize={2}
+              />
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
 }

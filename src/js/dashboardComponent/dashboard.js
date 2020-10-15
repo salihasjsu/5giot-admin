@@ -14,7 +14,7 @@ import Header from "./header.js";
 import MainDashboardPage from "./mainDashboardPage";
 import Sidebar from "./sidebar.js";
 import RealtimePage from "../realTimeDataComponent/realtimePage";
-import DefaultMap from "../realTimeDataComponent/map";
+import MapContainer from "../realTimeDataComponent/map";
 export default function Dashboard() {
   /*************** DATA ****************** */
   const [showPage, setShowPage] = useState({
@@ -62,6 +62,7 @@ export default function Dashboard() {
                   <Col sm="10">Dashboard</Col>
                 </Row>
               </Nav.Link>
+              <hr />
               <Nav.Link
                 eventKey="asset"
                 onClick={() =>
@@ -88,6 +89,7 @@ export default function Dashboard() {
                   <Col sm="10">Asset</Col>
                 </Row>
               </Nav.Link>
+              <hr />
               <Nav.Link
                 eventKey="statistic"
                 onClick={() =>
@@ -114,6 +116,7 @@ export default function Dashboard() {
                   <Col sm="10">Statistics</Col>
                 </Row>
               </Nav.Link>
+              <hr />
               <Nav.Link
                 eventKey="map"
                 onClick={() =>
@@ -140,6 +143,7 @@ export default function Dashboard() {
                   <Col sm="10">Map</Col>
                 </Row>
               </Nav.Link>
+              <hr />
               <Nav.Link
                 eventKey="real"
                 onClick={() =>
@@ -169,8 +173,8 @@ export default function Dashboard() {
             </Nav>
           </Sidebar>
         </Col>
-        <Col sm="9">
-          <div style={{ width: "1000px", paddingTop: "5%" }}>
+        <Col sm="10">
+          <div style={{ paddingTop: "3%", paddingBottom: "5%" }}>
             <div className={showPage.isMain ? "not-hidden" : "hidden"}>
               <MainDashboardPage />
             </div>
@@ -179,7 +183,7 @@ export default function Dashboard() {
               <AssetPage />
             </div>
             <div className={showPage.isMap ? "not-hidden" : "hidden"}>
-              <DefaultMap />
+              <MapContainer width={"100%"} height={"100vh"} />
             </div>
             <div className={showPage.isReal ? "not-hidden" : "hidden"}>
               <RealtimePage
