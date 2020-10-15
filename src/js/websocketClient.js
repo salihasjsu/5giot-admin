@@ -1,19 +1,23 @@
-let webSocket = null;
-function createWebSocketClient() {
-  webSocket = new WebSocket("ws://127.0.0.1:9001");
+export var Singleton = (function () {
+  var instance;
 
-  webSocket.onopen = () => {
-    console.log("Websocket open");
+  function createInstance() {
+    var object = new WebSocket("ws://127.0.0.1:9001");
+    return object;
+  }
+
+  return {
+    getInstance: function () {
+      //  if (!instance) {
+      instance = createInstance();
+      instance.onopen = () => {
+        console.log("websocket open");
+      };
+      instance.onclose = () => {
+        console.log("websocket closed");
+      };
+      // }
+      return instance;
+    },
   };
-
-  webSocket.onclose = () => {
-    console.log("Websocket close");
-  };
-  return webSocket;
-}
-
-export function getWSClient() {
-  const _wsClient = webSocket ? webSocket : createWebSocketClient();
-  if (!webSocket) webSocket = _wsClient;
-  return webSocket;
-}
+})();

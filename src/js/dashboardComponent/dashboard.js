@@ -15,7 +15,6 @@ import MainDashboardPage from "./mainDashboardPage";
 import Sidebar from "./sidebar.js";
 import RealtimePage from "../realTimeDataComponent/realtimePage";
 import DefaultMap from "../realTimeDataComponent/map";
-let refresh = false;
 export default function Dashboard() {
   /*************** DATA ****************** */
   const [showPage, setShowPage] = useState({
@@ -26,25 +25,17 @@ export default function Dashboard() {
     isReal: false,
   });
   /************** Methods ***************** */
-  /* function showTab(prop) {
-    setShowPage({
-      isMain: false,
-      isAsset: false,
-      isStat: false,
-      isMap: false,
-      isReal: false,
-    });
-  }*/
+
   return (
     <div className="dashboard-bg container-fluid ">
       <Row>
         <Header />
       </Row>
       <Row>
-        <Col sm="3" className="no-padding">
+        <Col sm="2" className="no-padding">
           {/* width={300} */}
-          <Sidebar width={280} height={"100vh"}>
-            <Nav defaultActiveKey="dashboard" className="flex-column">
+          <Sidebar width={230} height={"100vh"}>
+            <Nav defaultActiveKey="dashboard" className="flex-column sidebar">
               <Nav.Link
                 eventKey="dashboard"
                 onClick={() =>
@@ -181,7 +172,7 @@ export default function Dashboard() {
         <Col sm="9">
           <div style={{ width: "1000px", paddingTop: "5%" }}>
             <div className={showPage.isMain ? "not-hidden" : "hidden"}>
-              {showPage.isMain && <MainDashboardPage />}
+              <MainDashboardPage />
             </div>
             <div className={showPage.isAsset ? "not-hidden" : "hidden"}>
               {" "}
@@ -190,7 +181,14 @@ export default function Dashboard() {
             <div className={showPage.isMap ? "not-hidden" : "hidden"}>
               <DefaultMap />
             </div>
-            <div className={showPage.isReal ? "not-hidden" : "hidden"}></div>
+            <div className={showPage.isReal ? "not-hidden" : "hidden"}>
+              <RealtimePage
+                showBtn={true}
+                width={"60%"}
+                height={"20%"}
+                chartMain={null}
+              />
+            </div>
           </div>
         </Col>
       </Row>

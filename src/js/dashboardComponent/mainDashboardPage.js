@@ -5,42 +5,25 @@ import { assetColumns, userColumns } from "../sharedComponents/tableColumns";
 import { getAssets } from "../assetComponent/assetService";
 import { getApolloClient } from "../apolloClient";
 import { getUsers } from "../userComponent/userService";
-import { getWSClient } from "../websocketClient";
-import Chart from "chart.js";
+import Map from "../realTimeDataComponent/map";
+import RealTimePage from "../realTimeDataComponent/realtimePage";
 import { chartConfig } from "../sharedComponents/chartConfig";
+import Chart from "chart.js";
 export default function MainDashboardPage() {
   const columns = React.useMemo(() => assetColumns, []);
   const userTable = React.useMemo(() => userColumns, []);
   const [assetsMain, setAssetsMain] = useState([]);
   const [users, setUsers] = useState([]);
-  const [webSoc, setWebSoc] = useState(null);
-  const chartCont = useRef(null);
-  const [chartObj, setChartObj] = useState(null);
+  const chartMain = useRef(null);
+  const [chart, setChart] = useState(null);
   useEffect(() => {
-    if (!webSoc) {
-      setWebSoc(getWSClient());
-      return () => {
-        if (webSoc) webSoc.close();
-      };
+    if (chartMain && chartMain.current) {
+      console.log("Creating New chart instance");
+      const newChartInst = new Chart(chartMain.current, chartConfig());
+      setChart(newChartInst);
     }
-  }, []);
-  useEffect(() => {
-    if (!chartObj) {
-      if (chartCont && chartCont.current) {
-        const newChartInst = new Chart(chartCont.current, chartConfig);
-        setChartObj(newChartInst);
-      }
-    }
-    console.log("chart instance", chartObj);
-  }, [chartCont, chartObj]);
-  useEffect(() => {
-    console.log("websocket", webSoc);
-    if (!webSoc) return;
-    webSoc.onmessage = (e) => {
-      const messageData = JSON.parse(e.data);
-      console.log(messageData);
-    };
-  }, [webSoc]);
+  });
+
   useEffect(() => {
     let apolloClient = getApolloClient();
     if (!assetsMain.length > 0) {
@@ -81,7 +64,7 @@ export default function MainDashboardPage() {
   return (
     <div>
       <div className="row">
-        <Col sm={4} style={{ fontSize: "1.5rem" }}>
+        <Col sm={5} style={{ fontSize: "1.5rem" }}>
           {new Date().toLocaleString(undefined, {
             weekday: "long",
             year: "numeric",
@@ -98,28 +81,27 @@ export default function MainDashboardPage() {
       <hr />
       <Row>
         <Col sm="12">
-          <Card style={{ height: "70vh" }}>
+          <Card style={{ height: "50vh" }}>
             <Card.Header className="bg-warning text-white">
               Statistics
             </Card.Header>
             <Card.Body style={{ overflow: "scroll" }}>
-              <canvas
-                ref={chartCont}
-                width={"30%"}
-                height={"8%"}
-                options={{ maintainAspectRatio: false }}
+              <RealTimePage
+                width={"20%"}
+                height={"5%"}
+                showBtn={false}
+                chartMain={chartMain}
               />
             </Card.Body>
           </Card>
         </Col>
       </Row>
       <div className="row" style={{ paddingTop: "10px" }}>
-        <Col sm="6"></Col>
-        <Col sm="6">
-          <Card style={{ height: "40vh", overflow: "scroll" }}>
-            <Card.Header className="bg-primary text-white">Users</Card.Header>
-            <Card.Body>
-              <CustomizedTable columns={userTable} data={users} />
+        <Col sm="12">
+          <Card style={{ height: "50vh" }}>
+            <Card.Header className="bg-info text-white">Map</Card.Header>
+            <Card.Body style={{ backgroundColor: "white", overflow: "scroll" }}>
+              <Map />
             </Card.Body>
           </Card>
         </Col>
@@ -127,10 +109,10 @@ export default function MainDashboardPage() {
 
       <div className="row" style={{ paddingTop: "10px" }}>
         <Col sm="6">
-          <Card style={{ height: "40vh" }}>
-            <Card.Header className="bg-info text-white">Map</Card.Header>
-            <Card.Body style={{ backgroundColor: "white" }}>
-              <Card.Text></Card.Text>
+          <Card style={{ height: "40vh", overflow: "scroll" }}>
+            <Card.Header className="bg-primary text-white">Users</Card.Header>
+            <Card.Body>
+              <CustomizedTable columns={userTable} data={users} />
             </Card.Body>
           </Card>
         </Col>

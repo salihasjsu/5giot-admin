@@ -3,26 +3,34 @@ import { Button } from "react-bootstrap";
 import Chart from "chart.js";
 import "../../styles/realtime.css";
 import { chartConfig } from "../sharedComponents/chartConfig";
+import { Singleton } from "../websocketClient";
 const maxLength = 10;
 let device_id = "";
 /**** END Chart Configurations ******* */
 
-export default function RealTimePage() {
-  const [isStop, setStop] = useState(true);
+export default function RealTimePage({ showBtn, width, height, chartMain }) {
+  const [isStop, setStop] = useState(!showBtn ? false : true);
   const [devices, setDevices] = useState([]);
   const [listDevices, setListDevices] = useState([]);
   const [selectedDevice, setSelectedDevice] = useState("");
-  let ws = useRef(null);
-  const chartContainer = useRef(null);
+  const ws = useRef(null);
+  const chartContainer = useRef(chartMain);
   const [chartInst, setCharInst] = useState(null);
-  useEffect(() => {
+  /*useEffect(() => {
     ws.current = new WebSocket("ws://127.0.0.1:9001");
     ws.current.onopen = () => {
-      console.log("Websocket open");
+      console.log("Websocket open", ws);
     };
     ws.current.onclose = () => {
       console.log("Websocket closed");
     };
+    return () => {
+      ws.current.close();
+    };
+  }, []);*/
+  useEffect(() => {
+    ws.current = Singleton.getInstance();
+    console.log("Realtime", ws);
     return () => {
       ws.current.close();
     };
@@ -31,15 +39,67 @@ export default function RealTimePage() {
     console.log("list of devices", listDevices);
   }, [listDevices]);
   useEffect(() => {
-    if (!chartInst) {
-      if (chartContainer && chartContainer.current) {
-        const newChartInst = new Chart(chartContainer.current, chartConfig);
-        setCharInst(newChartInst);
-      }
+    // if (!chartInst) {
+    console.log("chart container", chartContainer);
+    if (chartContainer && chartContainer.current) {
+      console.log("Creating New chart instance");
+      const newChartInst = new Chart(chartContainer.current, chartConfig());
+      setCharInst(newChartInst);
     }
-    console.log("chart instance", chartInst);
-  }, [chartContainer, chartInst]);
-
+    // }
+    //  }
+  }, []);
+  useEffect(() => {
+    if (chartInst) {
+      if (!showBtn) {
+        let temperatureArray = [
+          "20.3433413",
+          "10.2321312",
+          "30.123123",
+          "40.123213",
+          "20.3433413",
+          "10.2321312",
+          "30.123123",
+          "40.123213",
+          "30.123123",
+          "40.123213",
+        ];
+        let humidityArray = [
+          "12.2323",
+          "8.222",
+          "13.222",
+          "5.2333",
+          "12.2323",
+          "8.222",
+          "13.222",
+          "5.2333",
+          "13.222",
+          "5.2333",
+        ];
+        chartInst.data.labels = [
+          "2020-10-14T08:21:58.383Z",
+          "2020-10-14T08:22:02.918Z",
+          "2020-10-14T08:22:19.947Z",
+          "2020-10-14T08:22:42.580Z",
+          "2020-10-14T08:23:42.580Z",
+          "2020-10-14T08:24:42.580Z",
+          "2020-10-14T08:25:42.580Z",
+          "2020-10-14T08:26:42.580Z",
+          "2020-10-14T08:27:42.580Z",
+          "2020-10-14T08:28:42.580Z",
+        ];
+        chartInst.data.datasets[0].data = temperatureArray;
+        chartInst.data.datasets[1].data = humidityArray;
+        chartInst.update();
+      } else {
+        chartInst.data.labels = [];
+        chartInst.data.datasets[0].data = [];
+        chartInst.data.datasets[1].data = [];
+        chartInst.clear();
+      }
+      console.log("chart instance", chartInst);
+    }
+  }, [chartInst]);
   useEffect(() => {
     // Find a device based on its Id
     const findDevice = (deviceId) => {
@@ -139,20 +199,27 @@ export default function RealTimePage() {
     console.log("change device select", e.target.value);
     setSelectedDevice(e.target.value);
     device_id = e.target.value;
+    chartInst.data.labels =
+      devices[devices.findIndex((x) => x.deviceId === device_id)].timeData;
+    chartInst.data.datasets[0].data =
+      devices[
+        devices.findIndex((x) => x.deviceId === device_id)
+      ].temperatureData;
+    chartInst.data.datasets[1].data =
+      devices[devices.findIndex((x) => x.deviceId === device_id)].humidityData;
+    chartInst.update();
   }
 
   return (
     <div>
       <div className="row realtime-header">
-        <div className="col-sm-1">
-          <p>Device(s):</p>
-        </div>
-        <div className="col-sm-6">
+        <div className="col-sm-8">
+          <span>Device(s):</span>
           <select
             name="Devices"
             onChange={onDeviceSelect}
             value={selectedDevice}
-            style={{ width: "200px" }}
+            style={{ width: "150px" }}
           >
             {listDevices.map((e, i) => {
               return (
@@ -167,7 +234,7 @@ export default function RealTimePage() {
           {" "}
           <Button
             onClick={() => setStop(!isStop)}
-            className="btn-success "
+            className={showBtn ? "btn-success not-hidden" : "hidden"}
             style={{ width: "100px" }}
           >
             {isStop ? "Start" : "Stop"}
@@ -177,7 +244,9 @@ export default function RealTimePage() {
       <div className="row">
         <canvas
           ref={chartContainer}
-          style={{ width: "500px !important", height: "400px !important" }}
+          width={width}
+          height={height}
+          options={{ maintainAspectRatio: false }}
         />
       </div>
     </div>

@@ -1,4 +1,10 @@
-import { faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEdit,
+  faPlus,
+  faTrash,
+  faCheckCircle,
+  faTimesCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { Button, Card, Form, Modal, Row } from "react-bootstrap";
@@ -11,7 +17,6 @@ import {
   updateAsset,
   removeAsset,
 } from "./assetService.js";
-import { getWSClient } from "../websocketClient";
 export default function AssetPage() {
   const [assets, setAssets] = useState([]);
   const [editIndex, setEditIndex] = useState("");
@@ -46,6 +51,26 @@ export default function AssetPage() {
       {
         Header: "Status",
         accessor: "status",
+        Cell: (tableProps) =>
+          assets[tableProps.row.index].status === "Active" ? (
+            <div style={{ textAlign: "center" }}>
+              <i>
+                <FontAwesomeIcon
+                  icon={faCheckCircle}
+                  style={{ color: "green" }}
+                />
+              </i>
+            </div>
+          ) : (
+            <div style={{ textAlign: "center" }}>
+              <i>
+                <FontAwesomeIcon
+                  icon={faTimesCircle}
+                  style={{ color: "red" }}
+                />
+              </i>
+            </div>
+          ),
       },
       {
         Header: "Edit/Delete",
@@ -54,7 +79,7 @@ export default function AssetPage() {
         style: { width: "15%" },
 
         Cell: (tableProps) => (
-          <div>
+          <div style={{ textAlign: "center" }}>
             <Button
               variant="warning"
               style={{ padding: "5" }}
@@ -234,11 +259,14 @@ export default function AssetPage() {
   /***********************END************************* */
   return (
     <div>
-      <Card style={{ overflow: "scroll", height: "500px" }}>
-        <Card.Header>
+      <Card>
+        <Card.Header
+          className="text-white"
+          style={{ backgroundColor: "#00cae3", fontFamily: "Poppins-Medium" }}
+        >
           <Card.Title>Assets</Card.Title>
         </Card.Header>
-        <Card.Body>
+        <Card.Body style={{ overflow: "scroll", height: "500px" }}>
           <Row>
             <Button
               variant="primary"
@@ -266,7 +294,7 @@ export default function AssetPage() {
         size="lg"
       >
         <Modal.Header closeButton>
-          <Modal.Title>Profile</Modal.Title>
+          <Modal.Title>Assets</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {" "}

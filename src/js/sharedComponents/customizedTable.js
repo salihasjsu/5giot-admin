@@ -11,10 +11,11 @@ const Styles = styled.div`
 
   table {
     width: 100%;
+    height: 30%;
     border-spacing: 0;
     border: 1px solid #a9a3a3;
     line-height: 1.6;
-    font-size: 16px;
+    font-size: 14px;
     color: black;
     font-weight: 300;
     overflow-x: hidden;
@@ -26,7 +27,9 @@ const Styles = styled.div`
         }
       }
     }
-
+    th {
+      height: 60px;
+    }
     th,
     td {
       margin: 0;
@@ -83,10 +86,7 @@ export default function CustomizedTable({ columns, data }) {
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
-                  <th
-                    style={column.style}
-                    {...column.getHeaderProps(column.getSortByToggleProps())}
-                  >
+                  <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                     {column.render("Header")}
                     {/* Add a sort direction indicator */}
                     <span>

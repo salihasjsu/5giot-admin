@@ -20,7 +20,7 @@ export default function Sidebar({ width, height, children }) {
       <div
         className="side-bar"
         style={{
-          transform: `translatex(${xPosition}px)`,
+          /* transform: `translatex(${xPosition}px)`,*/
           width: width,
           minHeight: height,
         }}

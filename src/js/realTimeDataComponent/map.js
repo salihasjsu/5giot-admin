@@ -50,7 +50,13 @@ const MapContainer = () => {
 
   return (
     <LoadScript googleMapsApiKey="AIzaSyBXueotq5UEyUcaysZHU_esRVGMLZl0aMs">
-      <GoogleMap mapContainerStyle={mapStyles} zoom={13} center={defaultCenter}>
+      <GoogleMap
+        mapContainerStyle={mapStyles}
+        zoom={13}
+        center={defaultCenter}
+        style={{ width: "100px !important", height: "100px !important" }}
+        resetBoundsOnResize={true}
+      >
         {locations.map((item) => {
           return <Marker key={item.name} position={item.location} />;
         })}

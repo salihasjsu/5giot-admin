@@ -1,3 +1,4 @@
+var config = null;
 const chartData = {
   datasets: [
     {
@@ -53,10 +54,13 @@ const chartOptions = {
     events: ["click"],
   },
 };
-const chartConfig = {
-  type: "line",
-  data: chartData,
-  options: chartOptions,
-};
-
-module.exports = { chartConfig };
+export function chartConfig() {
+  if (!config) {
+    config = {
+      type: "line",
+      data: chartData,
+      options: chartOptions,
+    };
+  }
+  return config;
+}
