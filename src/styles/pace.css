@@ -1,7 +1,9 @@
 .pace.pace-inactive {
   display: none;
 }
-
+.pace-running > *:not(.pace) {
+  opacity: 0.3;
+}
 .pace {
   -webkit-pointer-events: none;
   pointer-events: none;

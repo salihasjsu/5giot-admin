@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "../styles/App.css";
 import Dashboard from "./dashboardComponent/dashboard";
@@ -9,7 +9,6 @@ import Signup from "./userComponent//signup";
 import ForgotPassword from "./userComponent/forgotPassword";
 import "../styles/pace.css";
 import AppContext from "./appContext";
-import { useState } from "reactn";
 
 function App() {
   const [globalState, setGlobalState] = useState({});

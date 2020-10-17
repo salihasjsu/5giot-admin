@@ -74,13 +74,13 @@ export default function MainDashboardPage() {
     }
   }, [users, assetsMain]);
   return (
-    <div style={{ backgroundImage: "url(../images/login-bg/loginbg.png)" }}>
-      <div className="row">
+    <div>
+      <div className="row" style={{ borderBottom: "1px solid rgba(0,0,0,.1)" }}>
         <Col sm={6}>
           <h3 className="font-weight-bold">Dashboard</h3>
         </Col>
         <Col sm={6}>
-          <h4>
+          <h4 style={{ float: "right" }}>
             {new Date().toLocaleString(undefined, {
               weekday: "long",
               year: "numeric",
@@ -92,7 +92,7 @@ export default function MainDashboardPage() {
           </h4>
         </Col>
       </div>
-      <hr />
+
       <Row style={{ paddingTop: "3%" }}>
         <Col sm={4}>
           <Card className="shadow " style={{ borderLeft: "4px solid #36b9cc" }}>

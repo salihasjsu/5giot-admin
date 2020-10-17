@@ -68,15 +68,19 @@ export default function ForgotPassword() {
                     controlId="formPlaintextEmail"
                     className="no-margin"
                   >
-                    <Col sm="12" className="input">
+                    <Col sm="12">
                       <input
                         id="txtUsername"
                         type="text"
-                        placeholder="email"
+                        placeholder="Username"
+                        className="text-input"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setEmail(val);
+                        }}
                       />
-                      <span>
+                      <span className="text-input-span">
                         <i>
                           <FontAwesomeIcon
                             icon={faUser}
