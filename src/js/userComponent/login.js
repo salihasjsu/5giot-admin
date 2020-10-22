@@ -77,21 +77,21 @@ export default function Login() {
     e.preventDefault();
     console.log(user);
     const loginDetails = { userName: user.userName, password: user.password };
-    const { data, error } = await login({
+    const { data, error, loading } = await login({
       variables: loginDetails,
     });
-
+    if (loading) return "Loading...";
     console.log(error);
-
     if (data && data.login) {
+      console.log(data);
       saveTokens(data.login);
       let userObj = await getUserProfile();
       appContext.setUserState(userObj);
       history.push("/dashboard");
+    } else {
+      setError({ isError: true, message: "username or passowrd is incorrect" });
+      setUser(initUser);
     }
-
-    setError({ isError: true, message: "username or passowrd is incorrect" });
-    setUser(initUser);
   }
   async function getUserProfile() {
     let apolloClient = getApolloClient();

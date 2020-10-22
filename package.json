@@ -2,6 +2,10 @@
   "name": "5giot-admin",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "npm": "6.14.7",
+    "node": "10.15.3"
+  },
   "dependencies": {
     "@apollo/react-hooks": "^4.0.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.30",

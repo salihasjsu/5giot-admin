@@ -13,6 +13,7 @@
 }
 .nav .active {
   border-right: 1px solid #015ec6;
+  font-weight: bold;
 }
 .nav .nav-link {
   padding: 0px;

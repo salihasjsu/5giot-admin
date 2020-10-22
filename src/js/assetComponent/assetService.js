@@ -63,4 +63,15 @@ const removeAsset = gql`
   }
 `;
 
+/*const getAssetByID = gql`
+  query AssetById($_id: String!) {
+    assetById(_id: $_id) {
+      _id
+      name
+      manufacturer
+      imei
+      status
+    }
+  }
+`;*/
 export { addAsset, updateAsset, removeAsset, getAssets };

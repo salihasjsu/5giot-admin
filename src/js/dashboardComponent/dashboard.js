@@ -15,6 +15,7 @@ import MainDashboardPage from "./mainDashboardPage";
 import Sidebar from "./sidebar.js";
 import RealtimePage from "../realTimeDataComponent/realtimePage";
 import MapContainer from "../realTimeDataComponent/map";
+import { useEffect } from "reactn";
 export default function Dashboard() {
   /*************** DATA ****************** */
   const [showPage, setShowPage] = useState({
@@ -22,8 +23,18 @@ export default function Dashboard() {
     isAsset: false,
     isStat: false,
     isMap: false,
-    isReal: false,
+    isReal: true,
   });
+
+  useEffect(() => {
+    setShowPage({
+      isMain: true,
+      isAsset: false,
+      isStat: false,
+      isMap: false,
+      isReal: false,
+    });
+  }, []);
   /************** Methods ***************** */
 
   return (

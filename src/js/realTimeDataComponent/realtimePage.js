@@ -30,13 +30,13 @@ export default function RealTimePage({ showBtn, width, height, chartMain }) {
   }, []);*/
   useEffect(() => {
     ws.current = Singleton.getInstance();
-    console.log("Realtime", ws);
+    //console.log("Realtime", ws);
     return () => {
       ws.current.close();
     };
   }, []);
   useEffect(() => {
-    console.log("list of devices", listDevices);
+    //console.log("list of devices", listDevices);
   }, [listDevices]);
   useEffect(() => {
     if (!chartInst) {
@@ -48,7 +48,7 @@ export default function RealTimePage({ showBtn, width, height, chartMain }) {
       }
     }
     //  }
-  }, []);
+  }, [chartContainer, chartInst]);
   useEffect(() => {
     if (chartInst) {
       if (!showBtn) {
@@ -99,7 +99,7 @@ export default function RealTimePage({ showBtn, width, height, chartMain }) {
       }
       console.log("chart instance", chartInst);
     }
-  }, [chartInst]);
+  }, [chartInst, showBtn]);
   useEffect(() => {
     // Find a device based on its Id
     const findDevice = (deviceId) => {
@@ -173,7 +173,7 @@ export default function RealTimePage({ showBtn, width, height, chartMain }) {
         );
         const index = devices.findIndex((x) => x.deviceId === device_id);
 
-        if (device_id == messageData.DeviceId) {
+        if (device_id === messageData.DeviceId) {
           console.log(devices);
           console.log("update chart for device:", device_id);
           chartInst.data.labels = devices[index].timeData;
@@ -183,7 +183,7 @@ export default function RealTimePage({ showBtn, width, height, chartMain }) {
         }
       }
     };
-  }, [isStop, chartInst]);
+  }, [isStop, devices, chartInst]);
 
   /****************** FUNCTIONS**************** */
   function initDevice() {

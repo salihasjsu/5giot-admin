@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Card, Col, Row } from "react-bootstrap";
+import { Card, Col, Row, Button } from "react-bootstrap";
 import CustomizedTable from "../sharedComponents/customizedTable";
 import { assetColumns, userColumns } from "../sharedComponents/tableColumns";
 import { getAssets } from "../assetComponent/assetService";
@@ -9,7 +9,7 @@ import Map from "../realTimeDataComponent/map";
 import RealTimePage from "../realTimeDataComponent/realtimePage";
 import { chartConfig } from "../sharedComponents/chartConfig";
 import Chart from "chart.js";
-import { faUser, faCubes } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faCubes, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 export default function MainDashboardPage() {
   const columns = React.useMemo(() => assetColumns, []);
@@ -20,6 +20,7 @@ export default function MainDashboardPage() {
   const [chart, setChart] = useState(null);
   const [activeAssets, setActiveAssets] = useState(0);
   const [inactiveAssets, setInactiveAssets] = useState(0);
+  const [ref, setRef] = useState(false);
   useEffect(() => {
     if (chartMain && chartMain.current) {
       console.log("Creating New chart instance");
@@ -30,7 +31,7 @@ export default function MainDashboardPage() {
 
   useEffect(() => {
     let apolloClient = getApolloClient();
-    if (!assetsMain.length > 0) {
+    if (!assetsMain.length > 0 || ref) {
       apolloClient
         .query({
           query: getAssets,
@@ -72,7 +73,7 @@ export default function MainDashboardPage() {
           console.error(err);
         });
     }
-  }, [users, assetsMain]);
+  }, [users, assetsMain, ref]);
   return (
     <div>
       <div className="row" style={{ borderBottom: "1px solid rgba(0,0,0,.1)" }}>
@@ -202,6 +203,22 @@ export default function MainDashboardPage() {
           <Card style={{ height: "50vh" }} className="shadow">
             <Card.Header className="bg-success font-weight-bold text-white">
               Assets
+              <Button
+                onClick={() => setRef(!ref)}
+                style={{
+                  float: "right",
+                  backgroundColor: "rgba(0, 0, 255, 0)",
+                  border: "none",
+                }}
+              >
+                {" "}
+                <i>
+                  <FontAwesomeIcon
+                    icon={faSyncAlt}
+                    style={{ color: "#ffffff" }}
+                  />
+                </i>
+              </Button>
             </Card.Header>
             <Card.Body style={{ backgroundColor: "white" }}>
               <CustomizedTable

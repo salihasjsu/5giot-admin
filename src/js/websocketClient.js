@@ -2,7 +2,7 @@ export var Singleton = (function () {
   var instance;
 
   function createInstance() {
-    var object = new WebSocket("ws://127.0.0.1:9001");
+    var object = new WebSocket("ws://localhost:9001");
     return object;
   }
 

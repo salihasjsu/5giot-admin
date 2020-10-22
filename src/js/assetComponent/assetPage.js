@@ -192,7 +192,7 @@ export default function AssetPage() {
       .then(() => {
         let copyData = [...assets];
         copyData[editIndex] = assetObj;
-        console.log(editIndex);
+        //console.log(editIndex);
         setAssets(copyData);
         setEditIndex(-1);
         setShowAdd(false);
@@ -221,12 +221,19 @@ export default function AssetPage() {
           imei: assetObj.imei,
           status: assetObj.status,
         },
-        /*   update: (cache, { data: { addAsset } }) => {
+        update: (cache, { data: { addAsset } }) => {
           const data = cache.readQuery({ query: getAssets });
           console.log("Cached data", data.assets);
-          data.assets = [...data.assets, addAsset.message];
-          //cache.writeQuery({ query: getAssets });
-        },*/
+          assetObj._id = addAsset.message;
+          // data.assets = [...data.assets, assetObj];
+          console.log(assetObj);
+          cache.writeQuery({
+            query: getAssets,
+            data: {
+              assets: [...data.assets, assetObj],
+            },
+          });
+        },
       });
     } else if (action === "edit") {
       return apolloClient.mutate({
@@ -237,6 +244,20 @@ export default function AssetPage() {
           manufacturer: assetObj.manufacturer,
           imei: assetObj.imei,
           status: assetObj.status,
+        },
+        update: (cache) => {
+          const data = cache.readQuery({ query: getAssets });
+          console.log("Cached data", data.assets);
+          //assetObj.id = addAsset.message;
+          // data.assets = [...data.assets, assetObj];
+          var index = data.assets.findIndex((x) => x._id === assetObj._id);
+          data.assets[index] = assetObj;
+          cache.writeQuery({
+            query: getAssets,
+            data: {
+              assets: data.assets,
+            },
+          });
         },
       });
     }
@@ -253,6 +274,19 @@ export default function AssetPage() {
       mutation: removeAsset,
       variables: {
         _id: obj._id,
+      },
+      update: (cache) => {
+        const data = cache.readQuery({ query: getAssets });
+        data.assets = data.assets.filter(
+          ({ _id: itemId }) => itemId !== obj._id
+        );
+        console.log("DELET - data", data);
+        cache.writeQuery({
+          query: getAssets,
+          data: {
+            assets: data.assets,
+          },
+        });
       },
     });
   }
